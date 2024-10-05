@@ -34,6 +34,7 @@ android {
 
 dependencies {
     implementation(project(":domain"))
+    implementation(libs.koin.android)
     implementation(libs.androidx.core.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

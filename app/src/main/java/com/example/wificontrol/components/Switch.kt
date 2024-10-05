@@ -1,4 +1,4 @@
-package com.example.wificontrol.utils
+package com.example.wificontrol.components
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.animateDpAsState

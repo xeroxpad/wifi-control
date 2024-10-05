@@ -14,7 +14,7 @@ material = "1.12.0"
 jetbrainsKotlinJvm = "1.9.0"
 androidx-navigation = "2.7.7"
 kotlinx-coroutines = "1.8.0"
-
+koin = "3.5.6"
 
 
 [libraries]
@@ -37,6 +37,11 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidx-navigation" }
 kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+koin-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
+koin-navigation = { module = "io.insert-koin:koin-androidx-navigation", version.ref = "koin" }
+koin-core = { module = "io.insert-koin:koin-core" }
+koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
