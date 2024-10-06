@@ -2,4 +2,9 @@
     <string name="app_name">WiFi Control</string>
     <string name="download">Download</string>
     <string name="upload">Upload</string>
+    <string name="add_device">Устройство не найдено</string>
+    <string name="total_devices">Total:</string>
+    <string name="name_device">Vir-Link</string>
+    <string name="password_device">Password:</string>
+    <string name="my_routers">My Routers</string>
 </resources>
