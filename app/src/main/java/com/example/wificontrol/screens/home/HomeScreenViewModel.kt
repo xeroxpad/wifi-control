@@ -15,6 +15,10 @@ class HomeScreenViewModel() : ViewModel() {
     private val _showDialog = MutableStateFlow(false)
     val showDialog: StateFlow<Boolean> = _showDialog
 
+    fun toggleIsLoading() {
+        _isLoading.value = !_isLoading.value
+    }
+
     fun toggleDialog() {
         _showDialog.value = !_showDialog.value
     }

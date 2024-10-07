@@ -9,6 +9,7 @@ espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.6"
 activityCompose = "1.9.2"
 composeBom = "2024.04.01"
+speedmeterCompose = "1.0"
 uiTextGoogleFonts = "1.7.2"
 appcompat = "1.7.0"
 material = "1.12.0"
@@ -16,6 +17,7 @@ jetbrainsKotlinJvm = "1.9.0"
 androidx-navigation = "2.7.7"
 kotlinx-coroutines = "1.8.0"
 koin = "3.5.6"
+lottie-compose = "6.1.0"
 
 
 [libraries]
@@ -44,6 +46,8 @@ koin-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = 
 koin-navigation = { module = "io.insert-koin:koin-androidx-navigation", version.ref = "koin" }
 koin-core = { module = "io.insert-koin:koin-core" }
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin" }
+lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie-compose" }
+speedmeter-compose = { module = "io.github.farimarwat:speedmeter-compose", version.ref = "speedmeterCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

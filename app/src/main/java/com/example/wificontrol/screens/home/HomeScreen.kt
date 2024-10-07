@@ -2,6 +2,7 @@ package com.example.wificontrol.screens.home
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,17 +18,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -41,6 +40,7 @@ import com.example.wificontrol.components.Switch
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.fade
 import com.google.accompanist.placeholder.placeholder
+import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -52,6 +52,10 @@ fun HomeScreen(
     val isLoading by homeScreenViewModel.isLoading.collectAsStateWithLifecycle()
     val devicesNotFound by homeScreenViewModel.devicesNotFound.collectAsStateWithLifecycle()
     val showDialog by homeScreenViewModel.showDialog.collectAsStateWithLifecycle()
+    LaunchedEffect(Unit) {
+        delay(3000)
+        homeScreenViewModel.toggleIsLoading()
+    }
     Scaffold(
         modifier =
         modifier
@@ -69,7 +73,7 @@ fun HomeScreen(
                     contentDescription = null
                 )
                 Text(
-                    text = stringResource(id = R.string.my_routers),
+                    text = stringResource(id = R.string.my_devices),
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp
                 )
@@ -133,10 +137,9 @@ fun HomeScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_router),
-                            contentDescription = null,
+                        Box(
                             modifier = Modifier
+                                .size(300.dp)
                                 .clip(shape = RoundedCornerShape(16.dp))
                                 .placeholder(
                                     visible = isLoading,
@@ -144,9 +147,13 @@ fun HomeScreen(
                                     color = secondaryLight.copy(alpha = 0.1f),
                                     shape = RectangleShape
                                 )
-                                .size(300.dp),
-                            tint = Color.Unspecified
-                        )
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_router),
+                                contentDescription = null,
+                                tint = Color.Unspecified
+                            )
+                        }
                     }
                     Spacer(modifier = Modifier.height(50.dp))
                     Row(
@@ -161,7 +168,7 @@ fun HomeScreen(
                             ),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Column {
+                        Column(modifier = Modifier.padding(start = 5.dp)) {
                             Text(
                                 text = stringResource(id = R.string.name_device),
                                 fontWeight = FontWeight.Bold,
@@ -212,7 +219,6 @@ fun HomeScreen(
             }
         }
     )
-
     if (showDialog) {
         DialogAlert()
     }

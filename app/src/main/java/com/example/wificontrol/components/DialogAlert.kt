@@ -4,6 +4,8 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import com.example.wificontrol.R
 import com.example.wificontrol.screens.home.HomeScreenViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -13,10 +15,10 @@ fun DialogAlert(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
         onDismissRequest = { homeScreenViewModel.toggleDialog() },
         confirmButton = {
             TextButton(onClick = { homeScreenViewModel.toggleDialog() }) {
-                Text("OK")
+                Text(stringResource(id = R.string.done))
             }
         },
-        title = { Text("Подсказка") },
-        text = { Text("Перейдите на вкладку - Search, чтобы добавить устройство") }
+        title = { Text(stringResource(id = R.string.hint)) },
+        text = { Text(stringResource(id = R.string.go_to_search_tab)) }
     )
 }

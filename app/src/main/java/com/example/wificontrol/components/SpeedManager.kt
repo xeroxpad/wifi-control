@@ -46,7 +46,7 @@ fun SpeedManager(
                 .padding(horizontal = 10.dp)
                 .padding(top = 10.dp)
                 .fillMaxWidth()
-                .height(40.dp),
+                .height(43.dp),
         ) {
 
             Icon(
@@ -65,7 +65,7 @@ fun SpeedManager(
                 Text(
                     text = stringResource(id = downloadOrUpload),
                     fontSize = 10.sp,
-                    modifier = Modifier.offset(y = (-5).dp)
+                    modifier = Modifier.offset(y = (-8).dp)
                 )
             }
             Column(

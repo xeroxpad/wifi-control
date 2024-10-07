@@ -5,4 +5,5 @@ sealed class Graph(val route: String) {
     data object Search : Graph("search")
     data object Statistics : Graph("statistics")
     data object Profile : Graph("profile")
+    data object DeviceDetection : Graph("device_detection")
 }

@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.wificontrol.screens.devices.DeviceDetection
 import com.example.wificontrol.screens.home.HomeScreen
 import com.example.wificontrol.screens.profile.ProfileScreen
 import com.example.wificontrol.screens.search.SearchScreen
@@ -24,13 +25,16 @@ fun NavHostItem(
             HomeScreen(navController = navController)
         }
         composable(Graph.Search.route) {
-            SearchScreen()
+            SearchScreen(navController = navController)
         }
         composable(Graph.Statistics.route) {
             StatisticsScreen()
         }
         composable(Graph.Profile.route) {
             ProfileScreen()
+        }
+        composable(Graph.DeviceDetection.route) {
+            DeviceDetection()
         }
     }
 }
