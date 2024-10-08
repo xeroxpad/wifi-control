@@ -19,7 +19,7 @@ import kotlin.random.Random
 @Composable
 fun CustomSpeedometer(modifier: Modifier = Modifier) {
     var progress by remember {
-        mutableFloatStateOf(30f)
+        mutableFloatStateOf(0f)
     }
     SpeedMeter(
         modifier = modifier

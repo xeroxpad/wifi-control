@@ -18,6 +18,8 @@ androidx-navigation = "2.7.7"
 kotlinx-coroutines = "1.8.0"
 koin = "3.5.6"
 lottie-compose = "6.1.0"
+ycharts = "2.1.0"
+playServicesBasement = "18.4.0"
 
 
 [libraries]
@@ -48,6 +50,8 @@ koin-core = { module = "io.insert-koin:koin-core" }
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin" }
 lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie-compose" }
 speedmeter-compose = { module = "io.github.farimarwat:speedmeter-compose", version.ref = "speedmeterCompose" }
+ycharts = { module = "co.yml:ycharts", version.ref = "ycharts" }
+play-services-basement = { group = "com.google.android.gms", name = "play-services-basement", version.ref = "playServicesBasement" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

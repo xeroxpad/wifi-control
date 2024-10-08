@@ -39,7 +39,8 @@ fun SearchScreen(modifier: Modifier = Modifier, navController: NavController) {
                 Text(
                     text = stringResource(id = R.string.type_device),
                     fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp
+                    fontSize = 20.sp,
+                    modifier = Modifier.padding(vertical = 3.dp)
                 )
             }
         },

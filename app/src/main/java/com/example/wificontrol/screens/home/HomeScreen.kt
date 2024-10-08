@@ -75,7 +75,8 @@ fun HomeScreen(
                 Text(
                     text = stringResource(id = R.string.my_devices),
                     fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp
+                    fontSize = 20.sp,
+                    modifier = Modifier.padding(vertical = 3.dp)
                 )
                 Icon(
                     painter = painterResource(id = R.drawable.ic_notifications),
