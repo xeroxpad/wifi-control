@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import com.example.wificontrol.screens.devices.DeviceDetection
 import com.example.wificontrol.screens.home.HomeScreen
 import com.example.wificontrol.screens.profile.ProfileScreen
+import com.example.wificontrol.screens.scannerresult.ScannerResultScreen
 import com.example.wificontrol.screens.search.SearchScreen
 import com.example.wificontrol.screens.statistics.StatisticsScreen
 
@@ -34,7 +35,10 @@ fun NavHostItem(
             ProfileScreen()
         }
         composable(Graph.DeviceDetection.route) {
-            DeviceDetection()
+            DeviceDetection(navController = navController)
+        }
+        composable(Graph.ScannerResult.route) {
+            ScannerResultScreen()
         }
     }
 }

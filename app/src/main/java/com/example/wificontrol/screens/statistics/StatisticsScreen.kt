@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -159,10 +160,14 @@ fun StatisticsScreen(modifier: Modifier = Modifier) {
                         }
                     }
                     Spacer(modifier = Modifier.height(20.dp))
-                    CustomGraphStatistics(
-                        barValue = listOf(0.55f, 0.6f, 1f, 0.32f, 0.86f, 0.73f, 0.14f),
-                        xAxisScale = listOf("ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"),
-                    )
+                    LazyRow(modifier = Modifier.fillMaxWidth()) {
+                        item {
+                            CustomGraphStatistics(
+                                barValue = listOf(0.55f, 0.6f, 1f, 0.32f, 0.86f, 0.73f, 0.14f),
+                                xAxisScale = listOf("ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"),
+                            )
+                        }
+                    }
                 }
             }
         }

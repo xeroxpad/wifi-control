@@ -35,6 +35,7 @@ import androidx.navigation.NavController
 import com.example.compose.secondaryLight
 import com.example.wificontrol.R
 import com.example.wificontrol.components.DialogAlert
+import com.example.wificontrol.components.IconRouter
 import com.example.wificontrol.components.SpeedManager
 import com.example.wificontrol.components.Switch
 import com.google.accompanist.placeholder.PlaceholderHighlight
@@ -149,11 +150,7 @@ fun HomeScreen(
                                     shape = RectangleShape
                                 )
                         ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_router),
-                                contentDescription = null,
-                                tint = Color.Unspecified
-                            )
+                            IconRouter(model = R.drawable.ic_router, contentDescription = null)
                         }
                     }
                     Spacer(modifier = Modifier.height(50.dp))

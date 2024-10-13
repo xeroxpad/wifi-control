@@ -1,6 +1,7 @@
 [versions]
 accompanistPlaceholderMaterial = "0.36.0"
 agp = "8.5.2"
+converterGson = "2.11.0"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
@@ -9,6 +10,8 @@ espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.6"
 activityCompose = "1.9.2"
 composeBom = "2024.04.01"
+loggingInterceptor = "4.12.0"
+retrofit = "2.11.0"
 speedmeterCompose = "1.0"
 uiTextGoogleFonts = "1.7.2"
 appcompat = "1.7.0"
@@ -20,11 +23,16 @@ koin = "3.5.6"
 lottie-compose = "6.1.0"
 ycharts = "2.1.0"
 playServicesBasement = "18.4.0"
+coil = "2.6.0"
+coil-svg = "2.2.2"
+runtimeLivedataVersion = "1.7.3"
 
 
 [libraries]
 accompanist-placeholder-material = { module = "com.google.accompanist:accompanist-placeholder-material", version.ref = "accompanistPlaceholderMaterial" }
+accompanist-svg = { module = "com.google.accompanist:accompanist-svg", version.ref = "accompanistPlaceholderMaterial" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -40,6 +48,7 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-ui-text-google-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "loggingInterceptor" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidx-navigation" }
 kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
@@ -49,9 +58,13 @@ koin-navigation = { module = "io.insert-koin:koin-androidx-navigation", version.
 koin-core = { module = "io.insert-koin:koin-core" }
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin" }
 lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie-compose" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 speedmeter-compose = { module = "io.github.farimarwat:speedmeter-compose", version.ref = "speedmeterCompose" }
 ycharts = { module = "co.yml:ycharts", version.ref = "ycharts" }
 play-services-basement = { group = "com.google.android.gms", name = "play-services-basement", version.ref = "playServicesBasement" }
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+coil-svg = { group = "io.coil-kt", name = "coil-svg", version.ref = "coil-svg" }
+runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedataVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

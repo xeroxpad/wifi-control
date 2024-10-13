@@ -37,7 +37,7 @@ fun CustomGraphStatistics(
 ) {
     val context = LocalContext.current
     val barGraphHeight by remember { mutableStateOf(200.dp) }
-    val barGraphWidth by remember { mutableStateOf(20.dp) }
+    val barGraphWidth by remember { mutableStateOf(19.dp) }
     val scaleYAxisWidth by remember { mutableStateOf(50.dp) }
     val scaleLineWidth by remember { mutableStateOf(2.dp) }
     val usageStatistics = listOf("100 Gb", "80 Gb", "60 Gb", "40 Gb", "20 Gb", "1 Gb")
@@ -46,7 +46,6 @@ fun CustomGraphStatistics(
             .fillMaxSize(),
         verticalArrangement = Arrangement.Top
     ) {
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -93,7 +92,6 @@ fun CustomGraphStatistics(
                         }
                 )
             }
-
         }
         Box(
             modifier = Modifier
