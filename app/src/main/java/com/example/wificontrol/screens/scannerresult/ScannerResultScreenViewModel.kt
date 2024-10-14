@@ -15,8 +15,12 @@ class ScannerResultScreenViewModel(private val getWiFiNetworkUseCase: GetWiFiNet
 
     fun scanWiFiNetworks() {
         viewModelScope.launch {
-            getWiFiNetworkUseCase.execute().collect() { result ->
-                _wifiNetworks.value = result
+            getWiFiNetworkUseCase.execute().collect { result ->
+                val uniqueNetworks = result
+                    .filter { it.ssid.isNotBlank() }
+                    .toSet()
+                    .toList()
+                _wifiNetworks.value = uniqueNetworks
             }
         }
     }

@@ -1,5 +1,6 @@
 [versions]
 accompanistPlaceholderMaterial = "0.36.0"
+accompanistSwiperefresh = "0.36.0"
 agp = "8.5.2"
 converterGson = "2.11.0"
 kotlin = "1.9.0"
@@ -31,6 +32,7 @@ runtimeLivedataVersion = "1.7.3"
 [libraries]
 accompanist-placeholder-material = { module = "com.google.accompanist:accompanist-placeholder-material", version.ref = "accompanistPlaceholderMaterial" }
 accompanist-svg = { module = "com.google.accompanist:accompanist-svg", version.ref = "accompanistPlaceholderMaterial" }
+accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanistSwiperefresh" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

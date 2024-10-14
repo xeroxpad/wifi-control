@@ -22,4 +22,10 @@
     <string name="search_device">Поиск устройств...</string>
     <string name="wifi_statistics">WiFi статистика</string>
     <string name="usage_statistics">Статистика</string>
+    <string name="found_devices">Найденные устройства</string>
+    <string name="accurate_geodata_enabled">ТОЧНЫЕ ГЕОДАННЫЕ: ВКЛЮЧЕНО</string>
+    <string name="allow_during_use">РАЗРЕШИТЬ ВО ВРЕМЯ ИСПОЛЬЗОВАНИЯ</string>
+    <string name="allow_only_now">РАЗРЕШИТЬ ТОЛЬКО СЕЙЧАС</string>
+    <string name="prohibit">ЗАПРЕТИТЬ</string>
+    <string name="do_allow_the_WiFi_control_application_to_access_the_geodata">Разрешить приложению WiFi Control доступ к геоданным?</string>
 </resources>
