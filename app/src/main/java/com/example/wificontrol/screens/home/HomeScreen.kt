@@ -54,7 +54,7 @@ fun HomeScreen(
     val devicesNotFound by homeScreenViewModel.devicesNotFound.collectAsStateWithLifecycle()
     val showDialog by homeScreenViewModel.showDialog.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) {
-        delay(3000)
+//        delay(3000)
         homeScreenViewModel.toggleIsLoading()
     }
     Scaffold(

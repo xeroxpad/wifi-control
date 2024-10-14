@@ -32,6 +32,7 @@ import com.example.wificontrol.components.LocationPermissionDialog
 import com.example.wificontrol.navigation.Graph
 import com.example.wificontrol.preferences.PermissionPreferences
 import com.example.wificontrol.screens.scannerresult.ScannerResultScreenViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -48,6 +49,7 @@ fun DeviceDetection(
     val scope = rememberCoroutineScope()
     var isSearching by remember { mutableStateOf(false) }
     val wiFiNetworks by scannerResultScreenViewModel.wiFiNetworks.collectAsStateWithLifecycle()
+    val router by scannerResultScreenViewModel.router.collectAsStateWithLifecycle()
     val locationPermissionRequest = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -58,7 +60,8 @@ fun DeviceDetection(
                 permissionPreferences.setLocationPermissionGranted(true)
                 showDialog = false
                 scope.launch {
-                    scannerResultScreenViewModel.scanWiFiNetworks()
+//                    scannerResultScreenViewModel.scanWiFiNetworks()
+                    scannerResultScreenViewModel.scanRouter()
                 }
             }
 
@@ -69,8 +72,14 @@ fun DeviceDetection(
         }
     }
 
-    LaunchedEffect(wiFiNetworks) {
-        if (wiFiNetworks.isNotEmpty()) {
+//    LaunchedEffect(wiFiNetworks) {
+    LaunchedEffect(router) {
+//        if (wiFiNetworks.isNotEmpty()) {
+//            isSearching = false
+//            navController.navigate(Graph.ScannerResult.route)
+//        }
+
+        if (router.isNotEmpty()) {
             isSearching = false
             navController.navigate(Graph.ScannerResult.route)
         }
@@ -120,7 +129,8 @@ fun DeviceDetection(
             )
         } else {
             LaunchedEffect(Unit) {
-                scannerResultScreenViewModel.scanWiFiNetworks()
+//                scannerResultScreenViewModel.scanWiFiNetworks()
+                scannerResultScreenViewModel.scanRouter()
             }
         }
     }

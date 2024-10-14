@@ -38,7 +38,7 @@ fun NavHostItem(
             DeviceDetection(navController = navController)
         }
         composable(Graph.ScannerResult.route) {
-            ScannerResultScreen()
+            ScannerResultScreen(navController = navController)
         }
     }
 }
