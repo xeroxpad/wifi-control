@@ -45,85 +45,6 @@ import com.google.accompanist.swiperefresh.SwipeRefreshState
 import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 
-//@Composable
-//fun ScannerResultScreen(
-//    modifier: Modifier = Modifier,
-//    navController: NavController,
-//    scannerResultScreenViewModel: ScannerResultScreenViewModel = koinViewModel()
-//) {
-//    var isRefreshing by remember { mutableStateOf(false) }
-//    val wiFiNetworks by scannerResultScreenViewModel.wiFiNetworks.collectAsStateWithLifecycle()
-//    LaunchedEffect(isRefreshing) {
-//        scannerResultScreenViewModel.scanWiFiNetworks()
-//        if (isRefreshing) {
-//            delay(2000)
-//            isRefreshing = false
-//        }
-//    }
-//    Scaffold(
-//        modifier =
-//        modifier
-//            .fillMaxSize()
-//            .padding(horizontal = 20.dp),
-//        topBar = {
-//            Row(
-//                modifier = Modifier
-//                    .fillMaxWidth(),
-//                verticalAlignment = Alignment.CenterVertically,
-//                horizontalArrangement = Arrangement.Start
-//            ) {
-//                Icon(
-//                    painter = painterResource(id = R.drawable.ic_close),
-//                    contentDescription = null,
-//                    modifier = Modifier
-//                        .size(18.dp)
-//                        .clickable(indication = null, interactionSource = remember {
-//                            MutableInteractionSource()
-//                        }) { navController.navigate(Graph.Search.route) },
-//                    tint = Color.Unspecified
-//                )
-//                Spacer(modifier = Modifier.width(20.dp))
-//                Text(
-//                    text = stringResource(id = R.string.found_devices),
-//                    fontWeight = FontWeight.Bold,
-//                    fontSize = 20.sp,
-//                    modifier = Modifier.padding(vertical = 5.dp)
-//                )
-//            }
-//        },
-//        content = { padding ->
-//            SwipeRefresh(
-//                state = SwipeRefreshState(isRefreshing),
-//                onRefresh = { isRefreshing = true }
-//            ) {
-//                LazyColumn(
-//                    modifier = modifier
-//                        .padding(padding)
-//                        .fillMaxSize()
-//                ) {
-//                    items(wiFiNetworks) { network ->
-//                        Spacer(modifier = Modifier.height(10.dp))
-//                        Box(
-//                            modifier = Modifier
-//                                .clip(shape = RoundedCornerShape(16.dp))
-//                                .fillMaxWidth()
-//                                .background(Color.Gray.copy(0.2f))
-//                        ) {
-//                            Text(
-//                                text = "SSID: ${network.ssid}\nЧастота: ${network.frequency}\nMAC: ${network.macId}",
-//                                fontWeight = FontWeight.W300,
-//                                fontSize = 18.sp,
-//                                overflow = TextOverflow.Ellipsis,
-//                                modifier = Modifier.padding(vertical = 10.dp, horizontal = 10.dp)
-//                            )
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    )
-//}
-
 @Composable
 fun ScannerResultScreen(
     modifier: Modifier = Modifier,
@@ -182,6 +103,23 @@ fun ScannerResultScreen(
                         .padding(padding)
                         .fillMaxSize()
                 ) {
+                    items(wiFiNetworks) { network ->
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Box(
+                            modifier = Modifier
+                                .clip(shape = RoundedCornerShape(16.dp))
+                                .fillMaxWidth()
+                                .background(Color.Gray.copy(0.2f))
+                        ) {
+                            Text(
+                                text = "SSID: ${network.ssid}\nЧастота: ${network.frequency}\nMAC: ${network.macId}",
+                                fontWeight = FontWeight.W300,
+                                fontSize = 18.sp,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.padding(vertical = 10.dp, horizontal = 10.dp)
+                            )
+                        }
+                    }
                     items(router) { device ->
                         Spacer(modifier = Modifier.height(10.dp))
                         Box(
@@ -190,14 +128,13 @@ fun ScannerResultScreen(
                                 .fillMaxWidth()
                                 .background(Color.Gray.copy(0.2f))
                         ) {
-//                            Text(
-//                                text = "SSID: ${network.ssid}\nЧастота: ${network.frequency}\nMAC: ${network.macId}",
-//                                fontWeight = FontWeight.W300,
-//                                fontSize = 18.sp,
-//                                overflow = TextOverflow.Ellipsis,
-//                                modifier = Modifier.padding(vertical = 10.dp, horizontal = 10.dp)
-//                            )
-                            Text(text = "IP: ${device.ip}, MAC: ${device.macAddress}")
+                            Text(
+                                text = "IP: ${device.ip}\nMAC: ${device.macAddress}",
+                                fontWeight = FontWeight.W300,
+                                fontSize = 18.sp,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.padding(vertical = 10.dp, horizontal = 10.dp)
+                            )
                         }
                     }
                 }

@@ -1,7 +1,5 @@
 package com.example.wificontrol.screens.scannerresult
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.entities.Router
@@ -17,15 +15,19 @@ class ScannerResultScreenViewModel(
     private val scanLocalNetworkUseCase: ScanLocalNetworkUseCase
 ) : ViewModel() {
     private val _wifiNetworks = MutableStateFlow<List<WiFiNetwork>>(emptyList())
-    val wiFiNetworks: MutableStateFlow<List<WiFiNetwork>> get() = _wifiNetworks
+    val wiFiNetworks: StateFlow<List<WiFiNetwork>> get() = _wifiNetworks
 
     private val _router = MutableStateFlow<List<Router>>(emptyList())
-    val router: StateFlow<List<Router>> = _router
+    val router: StateFlow<List<Router>> get() = _router
 
     fun scanRouter() {
         viewModelScope.launch {
             scanLocalNetworkUseCase.execute().collect { result ->
-                _router.value = result
+                val uniqueNetworks = result
+                    .filter { it.ip.isNotBlank() }
+                    .toSet()
+                    .toList()
+                _router.value = uniqueNetworks
             }
         }
     }

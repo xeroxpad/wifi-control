@@ -12,5 +12,6 @@ dependencies {
     implementation(libs.koin.core)
     implementation(platform(libs.koin.bom))
     implementation(libs.kotlinx.coroutines)
+    implementation(libs.androidnetworktools)
     testImplementation(libs.junit)
 }

@@ -79,6 +79,7 @@ dependencies {
     implementation (libs.logging.interceptor)
     implementation(libs.runtime.livedata)
     implementation (libs.accompanist.swiperefresh)
+    implementation(libs.androidnetworktools)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

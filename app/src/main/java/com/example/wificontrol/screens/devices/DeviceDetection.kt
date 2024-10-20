@@ -1,6 +1,7 @@
 package com.example.wificontrol.screens.devices
 
 import android.Manifest
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -72,14 +73,8 @@ fun DeviceDetection(
         }
     }
 
-//    LaunchedEffect(wiFiNetworks) {
-    LaunchedEffect(router) {
-//        if (wiFiNetworks.isNotEmpty()) {
-//            isSearching = false
-//            navController.navigate(Graph.ScannerResult.route)
-//        }
-
-        if (router.isNotEmpty()) {
+    LaunchedEffect(wiFiNetworks, router) {
+        if (wiFiNetworks.isNotEmpty() || router.isNotEmpty()) {
             isSearching = false
             navController.navigate(Graph.ScannerResult.route)
         }
@@ -93,14 +88,14 @@ fun DeviceDetection(
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            if (!showDialog) {
+//            if (!showDialog) {
                 SearchAnimation()
                 Text(
                     text = stringResource(id = R.string.search_device),
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
                 )
-            }
+//            }
         }
         if (!locationPermissionGranted) {
             Box(
