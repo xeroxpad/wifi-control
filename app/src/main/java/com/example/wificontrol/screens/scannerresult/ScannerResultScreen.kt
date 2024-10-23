@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -34,6 +33,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -55,8 +55,8 @@ fun ScannerResultScreen(
     val wiFiNetworks by scannerResultScreenViewModel.wiFiNetworks.collectAsStateWithLifecycle()
     val router by scannerResultScreenViewModel.router.collectAsStateWithLifecycle()
     LaunchedEffect(isRefreshing) {
-//        scannerResultScreenViewModel.scanWiFiNetworks()
-        scannerResultScreenViewModel.scanRouter()
+        scannerResultScreenViewModel.scanWiFiNetworks()
+//        scannerResultScreenViewModel.scanRouter()
         if (isRefreshing) {
             delay(2000)
             isRefreshing = false
@@ -112,24 +112,7 @@ fun ScannerResultScreen(
                                 .background(Color.Gray.copy(0.2f))
                         ) {
                             Text(
-                                text = "SSID: ${network.ssid}\nЧастота: ${network.frequency}\nMAC: ${network.macId}",
-                                fontWeight = FontWeight.W300,
-                                fontSize = 18.sp,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.padding(vertical = 10.dp, horizontal = 10.dp)
-                            )
-                        }
-                    }
-                    items(router) { device ->
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Box(
-                            modifier = Modifier
-                                .clip(shape = RoundedCornerShape(16.dp))
-                                .fillMaxWidth()
-                                .background(Color.Gray.copy(0.2f))
-                        ) {
-                            Text(
-                                text = "IP: ${device.ip}\nMAC: ${device.macAddress}",
+                                text = "SSID: ${network.ssid}\nЧастота: ${network.frequency}\nIP: ${network.ip}\nMAC: ${network.macId.toUpperCase()}",
                                 fontWeight = FontWeight.W300,
                                 fontSize = 18.sp,
                                 overflow = TextOverflow.Ellipsis,

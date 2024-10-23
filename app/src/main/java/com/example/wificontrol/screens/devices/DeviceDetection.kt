@@ -61,8 +61,8 @@ fun DeviceDetection(
                 permissionPreferences.setLocationPermissionGranted(true)
                 showDialog = false
                 scope.launch {
-//                    scannerResultScreenViewModel.scanWiFiNetworks()
-                    scannerResultScreenViewModel.scanRouter()
+                    scannerResultScreenViewModel.scanWiFiNetworks()
+//                    scannerResultScreenViewModel.scanRouter()
                 }
             }
 
@@ -124,8 +124,8 @@ fun DeviceDetection(
             )
         } else {
             LaunchedEffect(Unit) {
-//                scannerResultScreenViewModel.scanWiFiNetworks()
-                scannerResultScreenViewModel.scanRouter()
+                scannerResultScreenViewModel.scanWiFiNetworks()
+//                scannerResultScreenViewModel.scanRouter()
             }
         }
     }
