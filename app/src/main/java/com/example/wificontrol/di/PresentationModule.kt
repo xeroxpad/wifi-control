@@ -14,5 +14,5 @@ val presentationModule =
         viewModel { ProfileScreenViewModel() }
         viewModel { SearchScreenViewModel() }
         viewModel { StatisticsScreenViewModel() }
-        viewModel { ScannerResultScreenViewModel(get(), get()) }
+        viewModel { ScannerResultScreenViewModel(get()) }
     }

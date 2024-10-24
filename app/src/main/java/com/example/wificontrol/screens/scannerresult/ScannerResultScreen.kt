@@ -33,7 +33,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -53,10 +52,8 @@ fun ScannerResultScreen(
 ) {
     var isRefreshing by remember { mutableStateOf(false) }
     val wiFiNetworks by scannerResultScreenViewModel.wiFiNetworks.collectAsStateWithLifecycle()
-    val router by scannerResultScreenViewModel.router.collectAsStateWithLifecycle()
     LaunchedEffect(isRefreshing) {
         scannerResultScreenViewModel.scanWiFiNetworks()
-//        scannerResultScreenViewModel.scanRouter()
         if (isRefreshing) {
             delay(2000)
             isRefreshing = false
@@ -112,11 +109,12 @@ fun ScannerResultScreen(
                                 .background(Color.Gray.copy(0.2f))
                         ) {
                             Text(
-                                text = "SSID: ${network.ssid}\nЧастота: ${network.frequency}\nIP: ${network.ip}\nMAC: ${network.macId.toUpperCase()}",
+                                text = "SSID: ${network.ssid}\nЧастота: ${network.frequency}\nMAC: ${network.macId.toUpperCase()}\nИнформация о DHCP:\n${network.ip}",
                                 fontWeight = FontWeight.W300,
                                 fontSize = 18.sp,
                                 overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.padding(vertical = 10.dp, horizontal = 10.dp)
+                                modifier = Modifier.padding(vertical = 10.dp, horizontal = 10.dp),
+                                lineHeight = 30.sp
                             )
                         }
                     }

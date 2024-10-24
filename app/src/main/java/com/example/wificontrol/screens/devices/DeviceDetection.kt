@@ -50,7 +50,6 @@ fun DeviceDetection(
     val scope = rememberCoroutineScope()
     var isSearching by remember { mutableStateOf(false) }
     val wiFiNetworks by scannerResultScreenViewModel.wiFiNetworks.collectAsStateWithLifecycle()
-    val router by scannerResultScreenViewModel.router.collectAsStateWithLifecycle()
     val locationPermissionRequest = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -62,7 +61,6 @@ fun DeviceDetection(
                 showDialog = false
                 scope.launch {
                     scannerResultScreenViewModel.scanWiFiNetworks()
-//                    scannerResultScreenViewModel.scanRouter()
                 }
             }
 
@@ -73,8 +71,8 @@ fun DeviceDetection(
         }
     }
 
-    LaunchedEffect(wiFiNetworks, router) {
-        if (wiFiNetworks.isNotEmpty() || router.isNotEmpty()) {
+    LaunchedEffect(wiFiNetworks) {
+        if (wiFiNetworks.isNotEmpty()) {
             isSearching = false
             navController.navigate(Graph.ScannerResult.route)
         }
@@ -88,14 +86,12 @@ fun DeviceDetection(
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-//            if (!showDialog) {
-                SearchAnimation()
-                Text(
-                    text = stringResource(id = R.string.search_device),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                )
-//            }
+            SearchAnimation()
+            Text(
+                text = stringResource(id = R.string.search_device),
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+            )
         }
         if (!locationPermissionGranted) {
             Box(
@@ -125,7 +121,6 @@ fun DeviceDetection(
         } else {
             LaunchedEffect(Unit) {
                 scannerResultScreenViewModel.scanWiFiNetworks()
-//                scannerResultScreenViewModel.scanRouter()
             }
         }
     }
