@@ -28,25 +28,17 @@ class IWiFiRepositoryImpl(private val context: Context) : IWiFiRepository {
             result.SSID == currentSsid && result.BSSID == currentBssid
         }
 
-        val dhcpInfoString = dhcpInfo?.let {
-            "IP: ${Formatter.formatIpAddress(it.ipAddress)}\nШлюз: ${Formatter.formatIpAddress(it.gateway)}\nDNS1: ${
-                Formatter.formatIpAddress(
-                    it.dns1
-                )
-            }\nDNS2: ${Formatter.formatIpAddress(it.dns2)}\n" +
-                    "IP сервера: ${Formatter.formatIpAddress(it.serverAddress)}\nМаска подсети: ${
-                        Formatter.formatIpAddress(
-                            it.netmask
-                        )
-                    }"
-        } ?: "информация о DHCP недоступна."
-
         val wifiNetwork = WiFiNetwork(
             ssid = currentSsid,
             macId = currentBssid,
             signalStrength = currentNetworkScanResult?.capabilities ?: "информация не доступна",
             frequency = connectionInfo.frequency,
-            ip = dhcpInfoString
+            ipAddress = dhcpInfo?.let { Formatter.formatIpAddress(it.ipAddress) } ?: "информация о DHCP недоступна.",
+            gateway = dhcpInfo?.let { Formatter.formatIpAddress(it.gateway) } ?: "информация о DHCP недоступна.",
+            dns1 = dhcpInfo?.let { Formatter.formatIpAddress(it.dns1) } ?: "информация о DHCP недоступна.",
+            dns2 = dhcpInfo?.let { Formatter.formatIpAddress(it.dns2) } ?: "информация о DHCP недоступна.",
+            serverAddress = dhcpInfo?.let { Formatter.formatIpAddress(it.serverAddress) } ?: "информация о DHCP недоступна.",
+            netmask = dhcpInfo?.let { Formatter.formatIpAddress(it.netmask) } ?: "информация о DHCP недоступна."
         )
         return listOf(wifiNetwork)
     }

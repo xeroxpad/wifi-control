@@ -109,7 +109,8 @@ fun ScannerResultScreen(
                                 .background(Color.Gray.copy(0.2f))
                         ) {
                             Text(
-                                text = "SSID: ${network.ssid}\nЧастота: ${network.frequency}\nMAC: ${network.macId.toUpperCase()}\nИнформация о DHCP:\n${network.ip}",
+                                text = "SSID: ${network.ssid}\nЧастота: ${network.frequency}\nMAC: ${network.macId.toUpperCase()}\nИнформация о DHCP:\nIP: ${network.ipAddress}\n" +
+                                        "Шлюз: ${network.gateway}\nDNS1: ${network.dns1}\nDNS2: ${network.dns2}\nМаска подсети: ${network.netmask}",
                                 fontWeight = FontWeight.W300,
                                 fontSize = 18.sp,
                                 overflow = TextOverflow.Ellipsis,
