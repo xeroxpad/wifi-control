@@ -106,6 +106,7 @@ fun ScannerResultScreen(
                             modifier = Modifier
                                 .clip(shape = RoundedCornerShape(16.dp))
                                 .fillMaxWidth()
+                                .clickable {  }
                                 .background(Color.Gray.copy(0.2f))
                         ) {
                             Text(

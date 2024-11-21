@@ -13,10 +13,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,16 +29,23 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.compose.secondaryLight
 import com.example.wificontrol.R
 import com.example.wificontrol.components.CustomGraphStatistics
 import com.example.wificontrol.components.CustomSpeedometer
+import com.example.wificontrol.screens.scannerresult.ScannerResultScreenViewModel
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.fade
 import com.google.accompanist.placeholder.placeholder
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun StatisticsScreen(modifier: Modifier = Modifier) {
+fun StatisticsScreen(
+    modifier: Modifier = Modifier,
+    viewModelStatisticsScreenViewModel: StatisticsScreenViewModel = koinViewModel()
+) {
+    val speedTestResult by viewModelStatisticsScreenViewModel.speedTestResult.collectAsStateWithLifecycle()
     Scaffold(
         modifier =
         modifier
@@ -92,38 +101,6 @@ fun StatisticsScreen(modifier: Modifier = Modifier) {
                     }
                     Spacer(modifier = Modifier.height(20.dp))
                     CustomSpeedometer()
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Row(
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_speed),
-                            contentDescription = null,
-                            modifier = Modifier.size(40.dp)
-                        )
-                        Spacer(modifier = Modifier.width(20.dp))
-                        Column(
-                            verticalArrangement = Arrangement.Center,
-                        ) {
-                            Text(text = "43 Mps", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                            Text(
-                                text = stringResource(id = R.string.download),
-                                fontSize = 14.sp,
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(20.dp))
-                        Column(
-                            verticalArrangement = Arrangement.Center,
-                        ) {
-                            Text(text = "12 Mps", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                            Text(
-                                text = stringResource(id = R.string.upload),
-                                fontSize = 14.sp,
-                            )
-                        }
-                    }
                     Spacer(modifier = Modifier.height(30.dp))
                     Icon(
                         painter = painterResource(id = R.drawable.ic_line),

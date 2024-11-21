@@ -1,5 +1,6 @@
 package com.example.wificontrol.di
 
+import com.example.wificontrol.screens.authorization.AuthorizationViewModel
 import com.example.wificontrol.screens.home.HomeScreenViewModel
 import com.example.wificontrol.screens.profile.ProfileScreenViewModel
 import com.example.wificontrol.screens.scannerresult.ScannerResultScreenViewModel
@@ -11,8 +12,9 @@ import org.koin.dsl.module
 val presentationModule =
     module {
         viewModel { HomeScreenViewModel() }
-        viewModel { ProfileScreenViewModel() }
+        viewModel { ProfileScreenViewModel(get()) }
         viewModel { SearchScreenViewModel() }
-        viewModel { StatisticsScreenViewModel() }
+        viewModel { StatisticsScreenViewModel(get()) }
         viewModel { ScannerResultScreenViewModel(get()) }
+//        viewModel { AuthorizationViewModel() }
     }

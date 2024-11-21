@@ -1,18 +1,30 @@
 package com.example.wificontrol.screens.search
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -33,67 +45,54 @@ fun SearchScreen(modifier: Modifier = Modifier, navController: NavController) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
+                horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = stringResource(id = R.string.type_device),
+                    text = stringResource(id = R.string.devices),
                     fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
+                    fontSize = 30.sp,
                     modifier = Modifier.padding(vertical = 3.dp)
                 )
             }
         },
         content = { padding ->
             LazyColumn(
-                modifier =
-                Modifier
+                modifier = Modifier
+                    .fillMaxSize()
                     .padding(padding),
-                verticalArrangement = Arrangement.Top
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 item {
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Row(
-                        horizontalArrangement = Arrangement.Start,
-                        modifier = Modifier.fillMaxWidth()
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(
-                            text = stringResource(id = R.string.select_device),
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp,
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_wifi_search),
+                            contentDescription = null,
+                            modifier = Modifier.size(140.dp),
+                            tint = Color.Unspecified,
                         )
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(text = "Список пуст", fontSize = 18.sp)
                     }
-                    Spacer(modifier = Modifier.height(20.dp))
-                    TypeDevice(
-                        painterTypeDevice = R.drawable.ic_router,
-                        titleTypeDevice = R.string.wifi_router,
-                        onClick = { navController.navigate(Graph.DeviceDetection.route) }
-                    )
-                    TypeDevice(
-                        painterTypeDevice = R.drawable.ic_modem,
-                        titleTypeDevice = R.string.modem,
-                        onClick = { navController.navigate(Graph.DeviceDetection.route) }
-                    )
-                    TypeDevice(
-                        painterTypeDevice = R.drawable.ic_switch,
-                        titleTypeDevice = R.string.switch_device,
-                        onClick = { navController.navigate(Graph.DeviceDetection.route) }
-                    )
-                    TypeDevice(
-                        painterTypeDevice = R.drawable.ic_access_pointer,
-                        titleTypeDevice = R.string.access_point,
-                        onClick = { navController.navigate(Graph.DeviceDetection.route) }
-                    )
-                    TypeDevice(
-                        painterTypeDevice = R.drawable.ic_repeater,
-                        titleTypeDevice = R.string.signal_amplifier,
-                        onClick = { navController.navigate(Graph.DeviceDetection.route) }
-                    )
-                    TypeDevice(
-                        painterTypeDevice = R.drawable.ic_network_storage,
-                        titleTypeDevice = R.string.network_storage,
-                        onClick = { navController.navigate(Graph.DeviceDetection.route) }
-                    )
+                    Spacer(modifier = Modifier.height(80.dp))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp)
+                            .clip(shape = RoundedCornerShape(10.dp))
+                            .border(
+                                border = BorderStroke(1.dp, color = Color.Gray),
+                                shape = RoundedCornerShape(10.dp)
+                            )
+                            .clickable { navController.navigate(Graph.DeviceDetection.route) },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = "Добавить роутер", fontSize = 18.sp)
+                    }
                 }
             }
         }

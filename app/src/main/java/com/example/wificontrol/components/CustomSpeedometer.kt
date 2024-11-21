@@ -12,11 +12,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.compose.primaryLight
 import com.farimarwat.speedmeter.SpeedMeter
 import kotlin.random.Random
 
 @Composable
-fun CustomSpeedometer(modifier: Modifier = Modifier) {
+fun CustomSpeedometer(modifier: Modifier = Modifier,) {
     var progress by remember {
         mutableFloatStateOf(0f)
     }
@@ -26,7 +27,7 @@ fun CustomSpeedometer(modifier: Modifier = Modifier) {
             .height(370.dp)
             .clickable(onClick = {
                 progress = Random
-                    .nextInt(100)
+                    .nextInt(80, 100)
                     .toFloat()
             },
                 indication = null,
@@ -38,7 +39,7 @@ fun CustomSpeedometer(modifier: Modifier = Modifier) {
         needleKnobColors = listOf(Color.Black, Color.Gray),
         needleKnobSize = 20f,
         progressColors = listOf(Color.Red, Color.Yellow),
-        labelColor = Color.White,
+        labelColor = primaryLight,
         unitText = "MB",
     )
 }

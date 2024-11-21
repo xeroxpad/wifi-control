@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.wificontrol.screens.authorization.AuthorizationScreen
 import com.example.wificontrol.screens.devices.DeviceDetection
 import com.example.wificontrol.screens.home.HomeScreen
 import com.example.wificontrol.screens.profile.ProfileScreen
@@ -32,13 +33,16 @@ fun NavHostItem(
             StatisticsScreen()
         }
         composable(Graph.Profile.route) {
-            ProfileScreen()
+            ProfileScreen(navController = navController)
         }
         composable(Graph.DeviceDetection.route) {
             DeviceDetection(navController = navController)
         }
         composable(Graph.ScannerResult.route) {
             ScannerResultScreen(navController = navController)
+        }
+        composable(Graph.AuthScreen.route) {
+            AuthorizationScreen{}
         }
     }
 }
