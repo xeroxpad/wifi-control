@@ -33,7 +33,6 @@ class MainActivity : ComponentActivity() {
                 ) {
                     viewModel.performAuthResult(it)
                 }
-
                 when (authState.value) {
                     is AuthState.Authorized -> {
                         StartScreen(navController = navController)
@@ -43,11 +42,8 @@ class MainActivity : ComponentActivity() {
                             launcher.launch(listOf(VKScope.WALL))
                         }
                     }
-                    else -> {
-
-                    }
+                    else -> {}
                 }
-//                StartScreen(navController = navController)
             }
         }
     }

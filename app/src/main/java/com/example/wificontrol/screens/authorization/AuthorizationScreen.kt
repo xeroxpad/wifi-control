@@ -64,12 +64,12 @@ fun AuthorizationScreen(
     Scaffold(
         modifier =
         modifier
-            .fillMaxSize()
-            .padding(horizontal = 20.dp),
+            .fillMaxSize(),
         topBar = {
             Row(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -87,6 +87,7 @@ fun AuthorizationScreen(
                 modifier =
                 Modifier
                     .padding(padding)
+                    .padding(horizontal = 20.dp)
                     .fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally

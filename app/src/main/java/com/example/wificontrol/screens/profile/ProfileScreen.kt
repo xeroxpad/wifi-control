@@ -18,6 +18,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,7 +30,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.compose.primaryLight
+import com.example.domain.entities.ProfileInfo
 import com.example.wificontrol.R
 import com.example.wificontrol.components.Switch
 import com.example.wificontrol.navigation.Graph
@@ -40,6 +44,8 @@ fun ProfileScreen(
     navController: NavController,
     viewModel: ProfileScreenViewModel = koinViewModel()
 ) {
+    val profile by viewModel.profile.observeAsState()
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -58,24 +64,35 @@ fun ProfileScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_profile),
+                AsyncImage(
+                    model = profile?.photo,
                     contentDescription = null,
                     modifier = Modifier
                         .padding(all = 10.dp)
+                        .size(48.dp)
+                        .clip(shape = RoundedCornerShape(18.dp))
                 )
+                Text(text = "${profile?.firstName} ${profile?.lastName}")
                 Box(modifier = Modifier
                     .clip(shape = RoundedCornerShape(18.dp))
                     .background(primaryLight)
                     .clickable { navController.navigate(Graph.AuthScreen.route) }
                     .padding(all = 10.dp)) {
-                    Text(text = stringResource(id = R.string.sign_in), fontWeight = FontWeight.Bold, color = Color.White)
+                    Text(
+                        text = stringResource(id = R.string.sign_in),
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
                 }
             }
         }
         Spacer(modifier = Modifier.height(20.dp))
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Text(text = stringResource(id = R.string.dark_theme), fontWeight = FontWeight.Bold, fontSize = 20.sp)
+            Text(
+                text = stringResource(id = R.string.dark_theme),
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp
+            )
             Spacer(modifier = Modifier.weight(1f))
             Switch()
         }

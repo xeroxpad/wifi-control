@@ -19,6 +19,7 @@ dependencies {
     implementation ("com.squareup.retrofit2:converter-gson:2.11.0")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
+//    implementation ("org.jetbrains.kotlin:kotlin-stdlib:1.5.21")
 //    implementation (libs.android.sdk.core)
 //    implementation (libs.android.sdk.api)
     testImplementation(libs.junit)

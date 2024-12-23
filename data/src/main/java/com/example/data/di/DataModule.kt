@@ -1,6 +1,7 @@
 package com.example.data.di
 
 import com.example.data.api.RouterApiService
+import com.example.data.api.VkApiService
 import com.example.data.provideRetrofit
 import com.example.data.provideSpeedApi
 import com.example.data.repositories.IRouterRepositoryImpl
@@ -30,5 +31,8 @@ val dataModule =
         }
         single<IRouterRepository> {
             IRouterRepositoryImpl(apiService = get(), username = "username", password = "password")
+        }
+        single<VkApiService> {
+            get<Retrofit>().create(VkApiService::class.java)
         }
     }
