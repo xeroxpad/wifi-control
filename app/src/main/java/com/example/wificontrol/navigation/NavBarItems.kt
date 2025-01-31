@@ -1,6 +1,7 @@
 package com.example.wificontrol.navigation
 
 import com.example.wificontrol.R
+import com.example.wificontrol.screens.profile.AccountData
 
 object NavBarItems {
     val BarItems = listOf(

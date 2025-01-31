@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.compose.secondaryLight
 import com.example.wificontrol.R
@@ -45,23 +46,25 @@ import com.example.wificontrol.components.IconRouter
 import com.example.wificontrol.components.SpeedManager
 import com.example.wificontrol.components.Switch
 import com.example.wificontrol.navigation.Graph
+import com.example.wificontrol.screens.profile.AccountData
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.fade
 import com.google.accompanist.placeholder.placeholder
 import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
+import java.net.URLDecoder
 
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    navController: NavController = rememberNavController(),
-    homeScreenViewModel: HomeScreenViewModel = koinViewModel()
+    navController: NavController,
+    homeScreenViewModel: HomeScreenViewModel = koinViewModel(),
 ) {
     val isLoading by homeScreenViewModel.isLoading.collectAsStateWithLifecycle()
     val devicesNotFound by homeScreenViewModel.devicesNotFound.collectAsStateWithLifecycle()
     val showDialog by homeScreenViewModel.showDialog.collectAsStateWithLifecycle()
     val isAddedDevices by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) {
+    LaunchedEffect(Unit,) {
 //        delay(3000)
         homeScreenViewModel.toggleIsLoading()
     }

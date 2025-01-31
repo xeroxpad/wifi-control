@@ -2,9 +2,11 @@ package com.example.wificontrol.screens.profile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -13,39 +15,52 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.compose.primaryLight
-import com.example.domain.entities.ProfileInfo
 import com.example.wificontrol.R
 import com.example.wificontrol.components.Switch
 import com.example.wificontrol.navigation.Graph
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
-    viewModel: ProfileScreenViewModel = koinViewModel()
+    viewModelProfile: ProfileScreenViewModel = koinViewModel(),
 ) {
-    val profile by viewModel.profile.observeAsState()
-
+    val profile by viewModelProfile.profile.observeAsState()
+    val email = viewModelProfile.userEmail
+    val tooltipState = rememberTooltipState()
+    val scope = rememberCoroutineScope()
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -56,32 +71,73 @@ fun ProfileScreen(
                 .clip(shape = RoundedCornerShape(18.dp))
                 .fillMaxWidth()
                 .background(color = Color.Gray.copy(alpha = 0.2f))
+                .padding(5.dp)
         ) {
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp),
+                    .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                AsyncImage(
-                    model = profile?.photo,
-                    contentDescription = null,
+                Box(
                     modifier = Modifier
-                        .padding(all = 10.dp)
-                        .size(48.dp)
-                        .clip(shape = RoundedCornerShape(18.dp))
-                )
-                Text(text = "${profile?.firstName} ${profile?.lastName}")
+                        .size(52.dp)
+                        .clip(shape = RoundedCornerShape(14.dp))
+                        .background(Color.Gray.copy(0.2f))
+                ) {
+                    AsyncImage(
+                        model = profile?.photo,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(shape = RoundedCornerShape(14.dp))
+                    )
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Box(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    TooltipBox(
+                        positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+                        tooltip = {
+                            PlainTooltip {
+                                Text(
+                                    text = email ?: "Аккаунт не найден",
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+                        },
+                        state = tooltipState
+                    ) {
+                        Text(
+                            text = email ?: "Аккаунт не найден",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentWidth(Alignment.Start)
+                                .pointerInput(Unit) {
+                                    detectTapGestures(
+                                        onLongPress = {
+                                            scope.launch { tooltipState.show() }
+                                        }
+                                    )
+                                },
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.width(8.dp))
                 Box(modifier = Modifier
-                    .clip(shape = RoundedCornerShape(18.dp))
+                    .clip(shape = RoundedCornerShape(14.dp))
                     .background(primaryLight)
                     .clickable { navController.navigate(Graph.AuthScreen.route) }
                     .padding(all = 10.dp)) {
                     Text(
-                        text = stringResource(id = R.string.sign_in),
+                        text = stringResource(id = R.string.log_out),
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = Color.White,
+                        maxLines = 1,
+                        modifier = Modifier.width(IntrinsicSize.Min)
                     )
                 }
             }

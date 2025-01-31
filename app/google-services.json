@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "496786885396",
+    "project_id": "wifi-control-4d58e",
+    "storage_bucket": "wifi-control-4d58e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:496786885396:android:7192dbbd56ded51e0f5001",
+        "android_client_info": {
+          "package_name": "com.example.wificontrol"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "496786885396-60h0v1v5dj3g4sjj05s2hm8gr0ua9ms5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.wificontrol",
+            "certificate_hash": "1aa90ebea54a7594c2a020bc199d83ba7ae0cdec"
+          }
+        },
+        {
+          "client_id": "496786885396-rtdngseojllpedfs26hu1u8l2tssdfpn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCzebTlUOwDrCZIUKpF_sPfhbmSltdSAEc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "496786885396-rtdngseojllpedfs26hu1u8l2tssdfpn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

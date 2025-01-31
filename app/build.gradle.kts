@@ -1,6 +1,9 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.gms)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.plugin.serialization)
 }
 
 android {
@@ -80,14 +83,16 @@ dependencies {
     implementation(libs.androidnetworktools)
     implementation (libs.ktor.client.core)
     implementation (libs.ktor.client.cio)
-//    implementation (libs.android.sdk.core)
-//    implementation (libs.android.sdk.api)
-    implementation ("com.vk:android-sdk-core:4.1.0")
-    implementation ("com.vk:android-sdk-api:4.1.0")
+    implementation (libs.android.vksdk.core)
+    implementation (libs.android.vksdk.api)
+    implementation (libs.play.services.auth)
+    implementation(platform(libs.firebase.bom))
+    implementation (libs.firebase.auth)
     implementation (libs.retrofit)
     implementation (libs.converter.gson)
     implementation (libs.kotlinx.coroutines.core)
     implementation (libs.kotlinx.coroutines.android.v190)
+    implementation(libs.kotlinx.serialization.json)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

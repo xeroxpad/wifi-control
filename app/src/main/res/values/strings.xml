@@ -28,12 +28,14 @@
     <string name="allow_only_now">РАЗРЕШИТЬ ТОЛЬКО СЕЙЧАС</string>
     <string name="prohibit">ЗАПРЕТИТЬ</string>
     <string name="devices">Устройства</string>
-    <string name="sign_in">Войти</string>
+    <string name="log_out">Выйти</string>
     <string name="dark_theme">Тёмная тема</string>
-    <string name="specify_phone_number">Укажите телефон</string>
+    <string name="sign_in_system">Войти</string>
     <string name="description_for_authorization">Так вы сможете пользоваться всеми преимуществами приложения</string>
     <string name="placeholder_number">000 000-00-00</string>
+    <string name="placeholder_email">email</string>
+    <string name="placeholder_password">password</string>
     <string name="do_allow_the_WiFi_control_application_to_access_the_geodata">Разрешить приложению WiFi Control доступ к геоданным?</string>
-<!--    <string name="com_vk_sdk_AppId">52698147</string>-->
     <integer name="com_vk_sdk_AppId">52698147</integer>
+    <string name="web_client_id_firebase">496786885396-rtdngseojllpedfs26hu1u8l2tssdfpn.apps.googleusercontent.com</string>
 </resources>

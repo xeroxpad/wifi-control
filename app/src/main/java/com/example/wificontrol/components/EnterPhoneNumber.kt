@@ -104,3 +104,69 @@ fun EnterPhoneNumber(
         }
     }
 }
+
+@Composable
+fun TextFieldAuth(
+    modifier: Modifier = Modifier,
+    placeholder: Int,
+    text: String,
+    textChange: (String) -> Unit
+) {
+    var isFocused by remember { mutableStateOf(false) }
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(shape = RoundedCornerShape(16.dp))
+            .background(Color.Gray.copy(alpha = 0.2f))
+            .border(
+                width = 1.dp,
+                color = if (isFocused) Color.Gray else Color.Transparent,
+                shape = RoundedCornerShape(16.dp)
+            )
+            .padding(horizontal = 16.dp)
+            .height(56.dp),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxHeight()
+        ) {
+            BasicTextField(
+                value = text,
+                onValueChange = { textChange(it) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .onFocusChanged { focusState ->
+                        isFocused = focusState.isFocused
+                    },
+                textStyle = TextStyle(
+                    textAlign = TextAlign.Start,
+                    color = Color.Black,
+                    lineHeight = 56.sp,
+                    fontSize = 14.sp,
+                    letterSpacing = 2.sp
+                ),
+                maxLines = 1,
+                singleLine = true,
+                cursorBrush = SolidColor(Color.Gray),
+                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
+                decorationBox = { innerTextField ->
+                    when {
+                        text.isEmpty() -> {
+                            Text(
+                                text = stringResource(id = placeholder),
+                                color = Color.Gray.copy(alpha = 2f),
+                                style = TextStyle(lineHeight = 56.sp),
+                                fontWeight = FontWeight.W500,
+                                fontSize = 14.sp,
+                                letterSpacing = 2.sp,
+                            )
+                        }
+                    }
+                    innerTextField()
+                }
+            )
+        }
+
+    }
+}

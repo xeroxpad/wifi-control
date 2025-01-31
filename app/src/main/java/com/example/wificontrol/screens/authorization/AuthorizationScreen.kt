@@ -1,17 +1,15 @@
 package com.example.wificontrol.screens.authorization
 
+import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,64 +22,56 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.compose.primaryLight
-import com.example.compose.secondaryLight
 import com.example.wificontrol.R
-import com.example.wificontrol.components.EnterPhoneNumber
-import com.example.wificontrol.components.PrefixNumberPhone
-import com.vk.api.sdk.VK
-import com.vk.api.sdk.auth.VKAuthenticationResult
-import com.vk.api.sdk.auth.VKScope
+import com.example.wificontrol.components.TextFieldAuth
+import com.example.wificontrol.navigation.Graph
+import com.example.wificontrol.screens.profile.AccountData
+import com.google.firebase.Firebase
+import com.google.firebase.auth.EmailAuthProvider
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun AuthorizationScreen(
     modifier: Modifier = Modifier,
-    navController: NavController = rememberNavController(),
-//    authorizationViewModel: AuthorizationViewModel = koinViewModel(),
+    navController: NavController,
+    authorizationViewModel: AuthorizationViewModel = koinViewModel(),
     onLoginVk: () -> Unit,
 ) {
-    var currentPhoneNumber by remember { mutableStateOf("") }
-    val textColor =
-        if (currentPhoneNumber.isEmpty()) primaryLight.copy(alpha = 0.5f) else Color.Black
+    val mail by authorizationViewModel.mail.collectAsStateWithLifecycle()
+    val password by authorizationViewModel.password.collectAsStateWithLifecycle()
+    val focusManager = LocalFocusManager.current
+    val authFirebase = Firebase.auth
+    val context = LocalContext.current
+    LaunchedEffect(mail, password) {
+        authorizationViewModel.mailChange(mail)
+        authorizationViewModel.passwordChange(password)
+    }
     Scaffold(
         modifier =
         modifier
-            .fillMaxSize(),
-        topBar = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_close),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(16.dp)
-                        .clickable { navController.popBackStack() },
-                )
-            }
-        },
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = { focusManager.clearFocus() })
+            },
+        topBar = {},
         content = { padding ->
             LazyColumn(
                 modifier =
@@ -93,52 +83,57 @@ fun AuthorizationScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 item {
-                    Text(
-                        text = stringResource(id = R.string.specify_phone_number),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 40.sp,
-                    )
+                    TextFieldAuth(
+                        placeholder = R.string.placeholder_email,
+                        text = mail,
+                        textChange = { authorizationViewModel.mailChange(it) })
                     Spacer(modifier = Modifier.height(20.dp))
-                    Text(
-                        text = stringResource(id = R.string.description_for_authorization),
-                        fontWeight = FontWeight.W400,
-                        fontSize = 18.sp,
-                        color = secondaryLight
-                    )
+                    TextFieldAuth(
+                        placeholder = R.string.placeholder_password,
+                        text = password,
+                        textChange = { authorizationViewModel.passwordChange(it) })
                     Spacer(modifier = Modifier.height(20.dp))
-                    Row(
-                        modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .height(56.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Box(
-                            modifier =
-                            Modifier
-                                .border(
-                                    width = 1.dp,
-                                    shape = RoundedCornerShape(16.dp),
-                                    color = Color.Black
-                                )
-                                .clip(shape = RoundedCornerShape(16.dp))
-                                .width(86.dp)
-                                .background(Color.Gray.copy(alpha = 0.2f))
-                                .fillMaxHeight(),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            PrefixNumberPhone(
-                                textColor = textColor,
+                    Box(modifier = Modifier
+                        .clip(shape = RoundedCornerShape(14.dp))
+                        .background(primaryLight)
+                        .clickable {
+                            signInAccountFirebase(
+                                authFirebase,
+                                mail,
+                                password,
+                                context,
+                                onSignInFailure = {},
+                                onSignInSuccess = {
+                                    navController.navigate(Graph.Home.route)
+                                }
                             )
                         }
-                        Spacer(modifier = Modifier.width(10.dp))
-                        EnterPhoneNumber(placeholder = R.string.placeholder_number) { newPhoneNumber ->
-                            currentPhoneNumber = newPhoneNumber
-                        }
+                        .padding(all = 10.dp)) {
+                        Text(
+                            text = stringResource(id = R.string.sign_in_system),
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
                     }
                     Spacer(modifier = Modifier.height(20.dp))
-                    Text(text = "Войти с помощью")
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(text = "зарегистрироваться ", modifier = Modifier.clickable {
+                            signUpAccountFirebase(
+                                authFirebase,
+                                mail,
+                                password,
+                                onSignUpFailure = {},
+                                onSignUpSuccess = {
+                                    navController.navigate(Graph.Home.route)
+                                }
+                            )
+                        }, color = primaryLight)
+                        Text(text = "или войти с помощью")
+                    }
+                    Spacer(modifier = Modifier.height(15.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center,
@@ -179,3 +174,76 @@ fun AuthorizationScreen(
         }
     )
 }
+
+fun signUpAccountFirebase(
+    authFirebase: FirebaseAuth,
+    email: String,
+    password: String,
+    onSignUpSuccess: (AccountData) -> Unit,
+    onSignUpFailure: (String) -> Unit
+) {
+    if (email.isBlank() || password.isBlank()) {
+        onSignUpFailure("Email и пароль не может быть пустым")
+        return
+    }
+    authFirebase.createUserWithEmailAndPassword(email, password)
+        .addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                onSignUpSuccess(
+                    AccountData(
+                        task.result.user?.uid!!,
+                        task.result.user?.email!!
+                    )
+                )
+            } else {
+                Log.d("Firebase", "Регистрация завершилась с ошибкой")
+            }
+        }
+}
+
+fun signInAccountFirebase(
+    authFirebase: FirebaseAuth,
+    email: String,
+    password: String,
+    context: Context,
+    onSignInSuccess: (AccountData) -> Unit,
+    onSignInFailure: (String) -> Unit,
+) {
+    if (email.isBlank() || password.isBlank()) {
+        onSignInFailure("Email и пароль не может быть пустым")
+        return
+    }
+    authFirebase.signInWithEmailAndPassword(email, password)
+        .addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                onSignInSuccess(
+                    AccountData(
+                        task.result.user?.uid!!,
+                        task.result.user?.email!!
+                    )
+                )
+            } else {
+                Toast.makeText(context, "Такого аккаунта не существует", Toast.LENGTH_SHORT).show()
+            }
+        }
+}
+
+private fun accountDelete(authFirebase: FirebaseAuth, email: String, password: String) {
+    val credential = EmailAuthProvider.getCredential(email, password)
+    authFirebase.currentUser?.reauthenticate(credential)?.addOnCompleteListener { task ->
+        if (task.isSuccessful) {
+            authFirebase.currentUser?.delete()?.addOnCompleteListener {
+                if (it.isSuccessful) {
+                    Log.d("Firebase", "Аккаунт удален")
+                } else {
+                    Log.d("Firebase", "Удаление с ошибкой")
+                }
+            }
+        }
+    }
+}
+
+private fun signOut(authFirebase: FirebaseAuth) {
+    authFirebase.signOut()
+}
+
