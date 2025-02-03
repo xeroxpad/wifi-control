@@ -91,7 +91,9 @@ fun AuthorizationScreen(
                     TextFieldAuth(
                         placeholder = R.string.placeholder_password,
                         text = password,
-                        textChange = { authorizationViewModel.passwordChange(it) })
+                        textChange = { authorizationViewModel.passwordChange(it) },
+                        isTextFieldForPassword = true
+                    )
                     Spacer(modifier = Modifier.height(20.dp))
                     Box(modifier = Modifier
                         .clip(shape = RoundedCornerShape(14.dp))
