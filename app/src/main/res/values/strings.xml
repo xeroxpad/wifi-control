@@ -31,6 +31,10 @@
     <string name="log_out">Выйти</string>
     <string name="dark_theme">Тёмная тема</string>
     <string name="sign_in_system">Войти</string>
+    <string name="sign_up_system">Зарегистрироваться</string>
+    <string name="sign_up_system_text_button">зарегистрироваться </string>
+    <string name="or_log_in_using">или войти с помощью</string>
+    <string name="i_already_have_an_account">уже есть аккаунт</string>
     <string name="description_for_authorization">Так вы сможете пользоваться всеми преимуществами приложения</string>
     <string name="placeholder_number">000 000-00-00</string>
     <string name="placeholder_email">email</string>

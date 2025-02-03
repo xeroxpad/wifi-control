@@ -208,17 +208,16 @@ fun TextFieldAuth(
                             passwordVisible -> {
                                 R.drawable.ic_eye
                             }
-
                             else -> {
                                 R.drawable.ic_eye_open
                             }
                         }
                     ),
-                    contentDescription = "",
+                    contentDescription = null,
                     modifier = Modifier
                         .weight(0.1f)
                         .padding(5.dp)
-                        .size(24.dp)
+                        .size(22.dp)
                         .combinedClickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null,
