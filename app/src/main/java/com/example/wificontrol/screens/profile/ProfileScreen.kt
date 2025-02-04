@@ -47,6 +47,9 @@ import com.example.compose.primaryLight
 import com.example.wificontrol.R
 import com.example.wificontrol.components.Switch
 import com.example.wificontrol.navigation.Graph
+import com.example.wificontrol.screens.authorization.signOut
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -61,6 +64,7 @@ fun ProfileScreen(
     val email = viewModelProfile.userEmail
     val tooltipState = rememberTooltipState()
     val scope = rememberCoroutineScope()
+    val authFirebase = Firebase.auth
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -130,7 +134,10 @@ fun ProfileScreen(
                 Box(modifier = Modifier
                     .clip(shape = RoundedCornerShape(14.dp))
                     .background(primaryLight)
-                    .clickable { navController.navigate(Graph.AuthScreen.route) }
+                    .clickable {
+                        signOut(authFirebase)
+                        navController.navigate(Graph.AuthScreen.route)
+                    }
                     .padding(all = 10.dp)) {
                     Text(
                         text = stringResource(id = R.string.log_out),

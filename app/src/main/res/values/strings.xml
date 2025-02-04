@@ -42,4 +42,10 @@
     <string name="do_allow_the_WiFi_control_application_to_access_the_geodata">Разрешить приложению WiFi Control доступ к геоданным?</string>
     <integer name="com_vk_sdk_AppId">52698147</integer>
     <string name="web_client_id_firebase">496786885396-rtdngseojllpedfs26hu1u8l2tssdfpn.apps.googleusercontent.com</string>
+    <string name="error_invalid_email">Некорректный адрес электронной почты</string>
+    <string name="error_wrong_password">Неверный пароль</string>
+    <string name="error_network">Ошибка сети. Проверьте подключение к интернету</string>
+    <string name="error_email_already_in_use">Этот email уже используется</string>
+    <string name="error_weak_password">Пароль слишком слабый. Используйте более сложный пароль</string>
+    <string name="error_unknown">Произошла неизвестная ошибка</string>
 </resources>

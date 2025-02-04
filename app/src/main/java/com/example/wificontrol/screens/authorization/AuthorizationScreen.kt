@@ -2,7 +2,6 @@
 
 package com.example.wificontrol.screens.authorization
 
-import android.content.Context
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -37,11 +36,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -67,9 +66,11 @@ fun AuthorizationScreen(
     var screenState by remember {
         mutableStateOf(false)
     }
+    val errorState = remember {
+        mutableStateOf("")
+    }
     val focusManager = LocalFocusManager.current
     val authFirebase = Firebase.auth
-    val context = LocalContext.current
     LaunchedEffect(mail, password) {
         authorizationViewModel.mailChange(mail)
         authorizationViewModel.passwordChange(password)
@@ -104,103 +105,45 @@ fun AuthorizationScreen(
                         textChange = { authorizationViewModel.passwordChange(it) },
                         isTextFieldForPassword = true
                     )
+                    if (errorState.value.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(20.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = errorState.value,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Red,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
                     Spacer(modifier = Modifier.height(20.dp))
-//                    Box(modifier = Modifier
-//                        .clip(shape = RoundedCornerShape(14.dp))
-//                        .background(primaryLight)
-//                        .clickable {
-//                            signInAccountFirebase(
-//                                authFirebase,
-//                                mail,
-//                                password,
-//                                context,
-//                                onSignInFailure = {},
-//                                onSignInSuccess = {
-//                                    navController.navigate(Graph.Home.route)
-//                                }
-//                            )
-//                        }
-//                        .padding(all = 10.dp)) {
-//                        Text(
-//                            text = stringResource(id = R.string.sign_in_system),
-//                            fontWeight = FontWeight.Bold,
-//                            color = Color.White
-//                        )
-//                    }
-//                    Spacer(modifier = Modifier.height(20.dp))
-//                    Row(
-//                        verticalAlignment = Alignment.CenterVertically,
-//                        horizontalArrangement = Arrangement.Center
-//                    ) {
-//                        Text(text = "зарегистрироваться ", modifier = Modifier.clickable {
-//                            !screenState
-//                            signUpAccountFirebase(
-//                                authFirebase,
-//                                mail,
-//                                password,
-//                                onSignUpFailure = {},
-//                                onSignUpSuccess = {
-//                                    navController.navigate(Graph.Home.route)
-//                                }
-//                            )
-//                        }, color = primaryLight)
-//                        Text(text = "или войти с помощью")
-//                    }
-//                    Spacer(modifier = Modifier.height(15.dp))
-//                    Row(
-//                        modifier = Modifier.fillMaxWidth(),
-//                        horizontalArrangement = Arrangement.Center,
-//                        verticalAlignment = Alignment.CenterVertically
-//                    ) {
-//                        Box(
-//                            modifier = Modifier
-//                                .clip(shape = RoundedCornerShape(16.dp))
-//                                .clickable { }
-//                                .size(48.dp),
-//                            contentAlignment = Alignment.Center
-//                        ) {
-//                            Icon(
-//                                painter = painterResource(id = R.drawable.ic_logo_yandex),
-//                                contentDescription = null,
-//                                tint = Color.Unspecified,
-//                            )
-//                        }
-//                        Spacer(modifier = Modifier.width(15.dp))
-//                        Box(
-//                            modifier = Modifier
-//                                .clip(shape = RoundedCornerShape(16.dp))
-//                                .clickable {
-//                                    onLoginVk()
-//                                }
-//                                .size(48.dp),
-//                            contentAlignment = Alignment.Center
-//                        ) {
-//                            Icon(
-//                                painter = painterResource(id = R.drawable.ic_logo_vk),
-//                                contentDescription = null,
-//                                tint = Color.Unspecified,
-//                            )
-//                        }
-//                    }
-
                     if (screenState) {
                         SignUpStateScreen(
                             authFirebase,
-                            context,
                             mail = mail,
                             password = password,
                             onSignUpSuccess = { /* ... */ },
                             onSwitchToSignUp = { screenState = false },
+                            onSignUpFailure = {error ->
+                                errorState.value = error
+                            }
                         )
                     } else {
                         SignInStateScreen(
                             authFirebase,
-                            context,
                             mail = mail,
                             password = password,
                             onSignInSuccess = { navController.navigate(Graph.Home.route) },
                             onLoginVk = onLoginVk,
-                            onSwitchToSignIn = { screenState = true }
+                            onSwitchToSignIn = { screenState = true },
+                            onSignInFailure = {error ->
+                                errorState.value = error
+                            }
                         )
                     }
                 }
@@ -212,12 +155,12 @@ fun AuthorizationScreen(
 @Composable
 fun SignInStateScreen(
     firebaseAuth: FirebaseAuth,
-    context: Context,
     mail: String,
     password: String,
     onSignInSuccess: () -> Unit,
     onLoginVk: () -> Unit,
-    onSwitchToSignIn: () -> Unit
+    onSwitchToSignIn: () -> Unit,
+    onSignInFailure: (String) -> Unit,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -231,8 +174,9 @@ fun SignInStateScreen(
                     firebaseAuth,
                     email = mail,
                     password = password,
-                    context,
-                    onSignInFailure = {},
+                    onSignInFailure = { error ->
+                        onSignInFailure(error)
+                    },
                     onSignInSuccess = {
                         onSignInSuccess()
                     }
@@ -303,10 +247,10 @@ fun SignInStateScreen(
 @Composable
 fun SignUpStateScreen(
     firebaseAuth: FirebaseAuth,
-    context: Context,
     mail: String,
     password: String,
     onSignUpSuccess: () -> Unit,
+    onSignUpFailure: (String) -> Unit,
     onSwitchToSignUp: () -> Unit,
 ) {
     Column(
@@ -321,7 +265,8 @@ fun SignUpStateScreen(
                     firebaseAuth,
                     mail,
                     password,
-                    onSignUpFailure = {},
+                    onSignUpFailure = { error ->
+                        onSignUpFailure(error) },
                     onSignUpSuccess = {
                         onSignUpSuccess()
                     }
