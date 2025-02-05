@@ -3,23 +3,16 @@ package com.example.wificontrol.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
-import androidx.navigation.toRoute
-import com.example.wificontrol.screens.authorization.AuthScreenObject
 import com.example.wificontrol.screens.authorization.AuthorizationScreen
-import com.example.wificontrol.screens.authorization.AuthorizationViewModel
 import com.example.wificontrol.screens.devices.DeviceDetection
 import com.example.wificontrol.screens.home.HomeScreen
-import com.example.wificontrol.screens.profile.AccountData
 import com.example.wificontrol.screens.profile.ProfileScreen
 import com.example.wificontrol.screens.scannerresult.ScannerResultScreen
 import com.example.wificontrol.screens.search.SearchScreen
 import com.example.wificontrol.screens.statistics.StatisticsScreen
-import okhttp3.internal.addHeaderLenient
-import org.koin.androidx.compose.koinViewModel
+import com.example.wificontrol.screens.support.ChatSupportScreen
 
 @Composable
 fun NavHostItem(
@@ -28,7 +21,7 @@ fun NavHostItem(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Graph.AuthScreen.route,
+        startDestination = Graph.Home.route,
         modifier = modifier
     ) {
         composable(Graph.Home.route) {
@@ -49,8 +42,11 @@ fun NavHostItem(
         composable(Graph.ScannerResult.route) {
             ScannerResultScreen(navController = navController)
         }
-        composable(Graph.AuthScreen.route) {
+        composable(Graph.Auth.route) {
             AuthorizationScreen(onLoginVk = {}, navController = navController)
+        }
+        composable(Graph.ChatSupport.route) {
+            ChatSupportScreen(navController = navController)
         }
     }
 }

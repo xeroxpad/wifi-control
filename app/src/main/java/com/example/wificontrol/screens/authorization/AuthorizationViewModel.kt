@@ -51,6 +51,11 @@ class AuthorizationViewModel(application: Application) : AndroidViewModel(applic
         _mail.value = email
     }
 
+    fun resetFields() {
+        _mail.value = ""
+        _password.value = ""
+    }
+
     fun passwordChange(newPassword: String) {
         viewModelScope.launch {
             withContext(Dispatchers.Default) {

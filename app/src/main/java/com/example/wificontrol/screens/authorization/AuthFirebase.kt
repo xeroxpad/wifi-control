@@ -18,7 +18,7 @@ fun signUpAccountFirebase(
     onSignUpFailure: (String) -> Unit
 ) {
     if (email.isBlank() || password.isBlank()) {
-        onSignUpFailure("email или пароль не может быть пустым")
+        onSignUpFailure("email и password не может быть пустым!")
         return
     }
     authFirebase.createUserWithEmailAndPassword(email, password)
@@ -46,7 +46,7 @@ fun signInAccountFirebase(
     onSignInFailure: (String) -> Unit,
 ) {
     if (email.isBlank() || password.isBlank()) {
-        onSignInFailure("email или пароль не может быть пустым")
+        onSignInFailure("email и password не может быть пустым!")
         return
     }
     authFirebase.signInWithEmailAndPassword(email, password)
@@ -89,23 +89,23 @@ private fun translateFirebaseSignInError(error: Exception?): String {
     return when (error) {
         is FirebaseAuthInvalidCredentialsException -> {
             when (error.errorCode) {
-                "ERROR_INVALID_EMAIL" -> "Некорректный адрес электронной почты"
-                "ERROR_WRONG_PASSWORD" -> "Неверный пароль"
-                else -> "Ошибка авторизации. Проверьте введенные данные"
+                "ERROR_INVALID_EMAIL" -> "некорректный адрес электронной почты"
+                "ERROR_WRONG_PASSWORD" -> "неверный пароль"
+                else -> "ошибка авторизации, проверьте введенные данные"
             }
         }
 
         is FirebaseAuthInvalidUserException -> {
             when (error.errorCode) {
-                "ERROR_USER_NOT_FOUND" -> "Пользователь не найден"
-                "ERROR_USER_DISABLED" -> "Аккаунт отключен"
-                else -> "Ошибка авторизации. Пользователь не найден"
+                "ERROR_USER_NOT_FOUND" -> "пользователь не найден"
+                "ERROR_USER_DISABLED" -> "аккаунт отключен"
+                else -> "ошибка авторизации, пользователь не найден"
             }
         }
 
-        is FirebaseAuthWeakPasswordException -> "Пароль слишком слабый. Используйте более сложный пароль"
-        is FirebaseNetworkException -> "Ошибка сети. Проверьте подключение к интернету"
-        else -> error?.message ?: "Произошла неизвестная ошибка"
+        is FirebaseAuthWeakPasswordException -> "пароль слишком слабый, используйте более сложный пароль"
+        is FirebaseNetworkException -> "ошибка сети, проверьте подключение к интернету"
+        else -> error?.message ?: "произошла неизвестная ошибка"
     }
 }
 
@@ -113,18 +113,18 @@ private fun translateFirebaseSignUpError(error: Exception?): String {
     return when (error) {
         is FirebaseAuthInvalidCredentialsException -> {
             when (error.errorCode) {
-                "ERROR_INVALID_EMAIL" -> "Некорректный адрес электронной почты"
-                else -> "Ошибка авторизации. Проверьте введенные данные"
+                "ERROR_INVALID_EMAIL" -> "некорректный адрес электронной почты"
+                else -> "ошибка регистрации, проверьте введенные данные"
             }
         }
         is FirebaseAuthUserCollisionException -> {
             when (error.errorCode) {
-                "ERROR_EMAIL_ALREADY_IN_USE" -> "Этот email уже используется"
-                else -> "Ошибка регистрации. Пользователь уже существует"
+                "ERROR_EMAIL_ALREADY_IN_USE" -> "этот email уже используется"
+                else -> "ошибка регистрации, пользователь уже существует"
             }
         }
-        is FirebaseAuthWeakPasswordException -> "Пароль слишком слабый. Используйте более сложный пароль"
-        is FirebaseNetworkException -> "Ошибка сети. Проверьте подключение к интернету"
-        else -> error?.message ?: "Произошла неизвестная ошибка"
+        is FirebaseAuthWeakPasswordException -> "пароль слишком слабый, используйте более сложный пароль"
+        is FirebaseNetworkException -> "ошибка сети, проверьте подключение к интернету"
+        else -> error?.message ?: "произошла неизвестная ошибка"
     }
 }

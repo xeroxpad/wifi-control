@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,6 +26,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -39,6 +41,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -66,11 +69,15 @@ fun AuthorizationScreen(
     var screenState by remember {
         mutableStateOf(false)
     }
-    val errorState = remember {
+    val errorStateSignIn = remember {
+        mutableStateOf("")
+    }
+    val errorStateSignUp = remember {
         mutableStateOf("")
     }
     val focusManager = LocalFocusManager.current
     val authFirebase = Firebase.auth
+
     LaunchedEffect(mail, password) {
         authorizationViewModel.mailChange(mail)
         authorizationViewModel.passwordChange(password)
@@ -105,44 +112,68 @@ fun AuthorizationScreen(
                         textChange = { authorizationViewModel.passwordChange(it) },
                         isTextFieldForPassword = true
                     )
-                    if (errorState.value.isNotEmpty()) {
-                        Spacer(modifier = Modifier.height(20.dp))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(
-                                text = errorState.value,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.Red,
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                    }
                     Spacer(modifier = Modifier.height(20.dp))
                     if (screenState) {
+                        if (errorStateSignUp.value.isNotEmpty()) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = errorStateSignUp.value,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Red,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(20.dp))
+                        }
                         SignUpStateScreen(
                             authFirebase,
                             mail = mail,
                             password = password,
-                            onSignUpSuccess = { /* ... */ },
-                            onSwitchToSignUp = { screenState = false },
-                            onSignUpFailure = {error ->
-                                errorState.value = error
+                            onSignUpSuccess = { navController.navigate(Graph.Home.route) },
+                            onSwitchToSignUp = {
+                                screenState = false
+                                authorizationViewModel.resetFields()
+                                errorStateSignUp.value = ""
+                            },
+                            onSignUpFailure = { error ->
+                                errorStateSignUp.value = error
                             }
                         )
                     } else {
+                        if (errorStateSignIn.value.isNotEmpty()) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = errorStateSignIn.value,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Red,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(20.dp))
+                        }
                         SignInStateScreen(
                             authFirebase,
                             mail = mail,
                             password = password,
                             onSignInSuccess = { navController.navigate(Graph.Home.route) },
                             onLoginVk = onLoginVk,
-                            onSwitchToSignIn = { screenState = true },
-                            onSignInFailure = {error ->
-                                errorState.value = error
+                            onSwitchToSignIn = {
+                                screenState = true
+                                authorizationViewModel.resetFields()
+                                errorStateSignIn.value = ""
+                            },
+                            onSignInFailure = { error ->
+                                errorStateSignIn.value = error
                             }
                         )
                     }
@@ -196,14 +227,24 @@ fun SignInStateScreen(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = "зарегистрироваться ", modifier = Modifier
-                .combinedClickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
-                    onClick = { onSwitchToSignIn() }
-                ), color = primaryLight,
-                fontSize = 14.sp)
-            Text(text = stringResource(id = R.string.or_log_in_using), fontSize = 14.sp)
+            Text(
+                text = "зарегистрироваться ",
+                color = primaryLight,
+                fontSize = 14.sp,
+                fontFamily = FontFamily.Default,
+                fontWeight = FontWeight.Normal,
+                modifier = Modifier
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                    ) { onSwitchToSignIn() },
+            )
+            Text(
+                text = "или войти с помощью",
+                fontSize = 14.sp,
+                fontFamily = FontFamily.Default,
+                fontWeight = FontWeight.Normal,
+            )
         }
         Spacer(modifier = Modifier.height(15.dp))
         Row(
@@ -266,7 +307,8 @@ fun SignUpStateScreen(
                     mail,
                     password,
                     onSignUpFailure = { error ->
-                        onSignUpFailure(error) },
+                        onSignUpFailure(error)
+                    },
                     onSignUpSuccess = {
                         onSignUpSuccess()
                     }

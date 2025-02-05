@@ -8,5 +8,6 @@ sealed class Graph(val route: String) {
     data object Profile : Graph("profile")
     data object DeviceDetection : Graph("device_detection")
     data object ScannerResult : Graph("scanner_result")
-    data object AuthScreen : Graph("authorization")
+    data object Auth : Graph("authorization")
+    data object ChatSupport : Graph("chat_support")
 }

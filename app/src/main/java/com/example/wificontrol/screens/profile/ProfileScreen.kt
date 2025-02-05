@@ -3,23 +3,24 @@ package com.example.wificontrol.screens.profile
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipBox
@@ -33,11 +34,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -64,6 +66,8 @@ fun ProfileScreen(
     val email = viewModelProfile.userEmail
     val tooltipState = rememberTooltipState()
     val scope = rememberCoroutineScope()
+    val isDarkTheme = isSystemInDarkTheme()
+    val avatarTintColor = if (isDarkTheme) Color.LightGray else Color.DarkGray
     val authFirebase = Firebase.auth
     Column(
         modifier = modifier
@@ -94,7 +98,11 @@ fun ProfileScreen(
                         contentDescription = null,
                         modifier = Modifier
                             .size(48.dp)
-                            .clip(shape = RoundedCornerShape(14.dp))
+                            .clip(shape = RoundedCornerShape(14.dp)),
+                        placeholder = painterResource(id = R.drawable.ic_avatar_default),
+                        error = painterResource(id = R.drawable.ic_avatar_default),
+                        contentScale = ContentScale.FillBounds,
+                        colorFilter = ColorFilter.tint(avatarTintColor),
                     )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
@@ -136,7 +144,7 @@ fun ProfileScreen(
                     .background(primaryLight)
                     .clickable {
                         signOut(authFirebase)
-                        navController.navigate(Graph.AuthScreen.route)
+                        navController.navigate(Graph.Auth.route)
                     }
                     .padding(all = 10.dp)) {
                     Text(
@@ -150,14 +158,51 @@ fun ProfileScreen(
             }
         }
         Spacer(modifier = Modifier.height(20.dp))
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = stringResource(id = R.string.dark_theme),
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            Switch()
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(46.dp)
+                .clip(shape = RoundedCornerShape(14.dp)),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(id = R.string.dark_theme),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Switch()
+            }
+        }
+        Spacer(modifier = Modifier.height(5.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(46.dp)
+                .clip(shape = RoundedCornerShape(14.dp))
+                .clickable { navController.navigate(Graph.ChatSupport.route) },
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(3.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(id = R.string.chat_support),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_support),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
         }
     }
 }

@@ -8,28 +8,27 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import com.example.wificontrol.navigation.BottomNavigationBar
 import com.example.wificontrol.navigation.Graph
 import com.example.wificontrol.navigation.NavHostItem
-import com.example.wificontrol.screens.authorization.AuthScreenObject
 import com.example.wificontrol.screens.authorization.AuthorizationViewModel
-import com.example.wificontrol.screens.profile.AccountData
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun StartScreen(navController: NavHostController, authorizationViewModel: AuthorizationViewModel = koinViewModel()) {
+fun StartScreen(
+    navController: NavHostController,
+    authorizationViewModel: AuthorizationViewModel = koinViewModel()
+) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val baseRoute = currentRoute?.substringBefore("/") ?: ""
     val bottomBarIsShow = rememberSaveable { (mutableStateOf(true)) }
     bottomBarIsShow.value = when (baseRoute) {
-        Graph.AuthScreen.route,
-        Graph.ScannerResult.route
+        Graph.Auth.route,
+        Graph.ScannerResult.route,
+        Graph.ChatSupport.route
         -> false
         else -> true
     }

@@ -72,10 +72,10 @@ fun ScannerResultScreen(
                 horizontalArrangement = Arrangement.Start
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_close),
+                    painter = painterResource(id = R.drawable.ic_back),
                     contentDescription = null,
                     modifier = Modifier
-                        .size(18.dp)
+                        .size(20.dp)
                         .clickable(indication = null, interactionSource = remember {
                             MutableInteractionSource()
                         }) { navController.navigate(Graph.Search.route) },

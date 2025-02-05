@@ -52,6 +52,7 @@ android-vksdk-core = { module = "com.vk:android-sdk-core", version.ref = "androi
 androidnetworktools = { module = "com.github.stealthcopter:AndroidNetworkTools", version.ref = "androidnetworktools" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-messaging-ktx = { module = "com.google.firebase:firebase-messaging-ktx" }
 google-services = { module = "com.google.gms:google-services", version.ref = "googleServices" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 yandex-auth-sdk = { module = "com.yandex.android:authsdk", version.ref = "authsdk" }
