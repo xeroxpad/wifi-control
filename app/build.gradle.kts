@@ -92,6 +92,7 @@ dependencies {
     implementation (libs.converter.gson)
     implementation (libs.kotlinx.coroutines.core)
     implementation (libs.kotlinx.coroutines.android.v190)
+    implementation(libs.compose.shimmer)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.firebase.messaging.ktx)
     testImplementation(libs.junit)

@@ -165,7 +165,9 @@ fun ProfileScreen(
                 .clip(shape = RoundedCornerShape(14.dp)),
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(3.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
