@@ -1,33 +1,31 @@
-@file:OptIn(ExperimentalLayoutApi::class)
-
 package com.example.wificontrol.screens.support
 
 import android.util.Log
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -35,6 +33,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -42,8 +43,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -51,14 +53,17 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -70,7 +75,11 @@ import com.valentinilk.shimmer.ShimmerBounds
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
 import org.koin.androidx.compose.koinViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatSupportScreen(
     modifier: Modifier = Modifier,
@@ -81,9 +90,10 @@ fun ChatSupportScreen(
     val messageText = remember { mutableStateOf("") }
     val scrollState = rememberLazyListState()
     val message by chatSupportViewModel.messages.collectAsState()
-    val reversedMessages = remember(message) { message.reversed() }
-    Log.d("ChatUI", "Messages in UI: ${message.size}")
-
+    val reversedMessages = remember(message) { message }
+    val chatItems = remember(reversedMessages) { reversedMessages.toChatItems() }
+    var selectedMessage by remember { mutableStateOf<MessageData?>(null) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
     LaunchedEffect(chatId) {
         Log.d("ChatSupport", "Полученный chatId в UI: '$chatId'")
         if (chatId.isNotEmpty()) {
@@ -98,12 +108,12 @@ fun ChatSupportScreen(
         }
     }
     LaunchedEffect(Unit) {
-        chatSupportViewModel.setChatScreenActive()
+        chatSupportViewModel.setChatScreenActive(true)
         chatSupportViewModel.markMessagesAsRead()
     }
     DisposableEffect(Unit) {
         onDispose {
-            chatSupportViewModel.setChatScreenActive(true)
+            chatSupportViewModel.setChatScreenActive(false)
         }
     }
 
@@ -115,26 +125,51 @@ fun ChatSupportScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
+                    .padding(horizontal = 20.dp)
+                    .background(MaterialTheme.colorScheme.background),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_back),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clickable(indication = null, interactionSource = remember {
-                            MutableInteractionSource()
-                        }) { navController.popBackStack() },
-                )
-                Spacer(modifier = Modifier.width(20.dp))
-                Text(
-                    text = stringResource(id = R.string.chat_support),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    modifier = Modifier.padding(vertical = 5.dp)
-                )
+                if (selectedMessage != null) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Отмена",
+                        modifier = Modifier
+                            .size(32.dp)
+                            .padding(vertical = 5.dp)
+                            .clickable {
+                                selectedMessage = null
+                            }
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Удалить",
+                        modifier = Modifier
+                            .size(32.dp)
+                            .padding(vertical = 5.dp)
+                            .clickable {
+                                showDeleteDialog = true
+                            }
+                    )
+                } else {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_back),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable(indication = null, interactionSource = remember {
+                                MutableInteractionSource()
+                            }) { navController.popBackStack() },
+                    )
+                    Spacer(modifier = Modifier.width(20.dp))
+                    Text(
+                        text = stringResource(id = R.string.chat_support),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp,
+                        modifier = Modifier.padding(vertical = 5.dp)
+                    )
+                }
             }
         },
         content = { padding ->
@@ -142,8 +177,30 @@ fun ChatSupportScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .consumeWindowInsets(padding)
-                    .padding(padding)
             ) {
+                if (showDeleteDialog && selectedMessage != null) {
+                    AlertDialog(
+                        onDismissRequest = { showDeleteDialog = false },
+                        title = { Text("Удалить сообщение") },
+                        text = { Text("Вы уверены, что хотите удалить это сообщение?") },
+                        confirmButton = {
+                            TextButton(onClick = {
+                                chatSupportViewModel.deleteMessage(selectedMessage!!.msgId)
+                                showDeleteDialog = false
+                            }) {
+                                Text("Удалить")
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = {
+                                showDeleteDialog = false
+                                selectedMessage = null
+                            }) {
+                                Text("Отмена")
+                            }
+                        }
+                    )
+                }
                 LazyColumn(
                     modifier = Modifier
                         .weight(1f)
@@ -152,11 +209,19 @@ fun ChatSupportScreen(
                     reverseLayout = true,
                     state = scrollState
                 ) {
-                    items(reversedMessages) { message ->
-                        MessageBubble(
-                            message,
-                            isOutgoing = message.senderId == Firebase.auth.currentUser?.uid
-                        )
+                    items(chatItems) { message ->
+                        when (message) {
+                            is ChatItem.Message -> MessageBubble(
+                                message.message,
+                                isOutgoing = message.message.senderId == Firebase.auth.currentUser?.uid,
+                                onLongPress = {
+                                    selectedMessage = message.message
+                                },
+                                onClick = {  }
+                            )
+
+                            is ChatItem.DateSeparator -> DateSeparator(message.date)
+                        }
                     }
                 }
                 Row(
@@ -171,7 +236,15 @@ fun ChatSupportScreen(
                         onValueChange = { messageText.value = it },
                         placeholder = { Text("Введите сообщение...") },
                         keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
+                            .weight(1f)
+                            .background(Color.Transparent, RoundedCornerShape(20.dp)),
+                        colors = TextFieldDefaults.textFieldColors(
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent,
+                        ),
+                        shape = RoundedCornerShape(20.dp)
                     )
                     IconButton(
                         onClick = {
@@ -213,12 +286,48 @@ fun ShimmerLoadingPlaceholder(isOutgoing: Boolean) {
 }
 
 @Composable
-fun MessageBubble(message: MessageData, isOutgoing: Boolean) {
+fun DateSeparator(date: String) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = date,
+            fontSize = 14.sp,
+            color = Color.Gray,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun MessageBubble(
+    message: MessageData,
+    isOutgoing: Boolean,
+    onLongPress: () -> Unit = {},
+    onClick: () -> Unit = {}
+) {
     val chatSupportViewModel: ChatSupportViewModel = koinViewModel()
+    var isSelected by remember { mutableStateOf(false) }
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 4.dp),
+            .padding(bottom = 4.dp)
+            .combinedClickable(
+                enabled = isOutgoing,
+                onClick = { onClick() },
+                onLongClick = {
+                    isSelected = !isSelected
+                    onLongPress()
+                }
+            )
+            .background(
+                color = if (isSelected) Color.Gray.copy(alpha = 0.2f)
+                else Color.Transparent
+            ),
         horizontalArrangement = if (isOutgoing) Arrangement.End else Arrangement.Start
     ) {
         Box(
@@ -235,6 +344,7 @@ fun MessageBubble(message: MessageData, isOutgoing: Boolean) {
                     Text(
                         text = message.content,
                         fontSize = 16.sp,
+                        lineHeight = 12.sp,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                     )
                     Row(
@@ -274,4 +384,25 @@ fun MessageBubble(message: MessageData, isOutgoing: Boolean) {
             }
         }
     }
+}
+
+private fun List<MessageData>.toChatItems(): List<ChatItem> {
+    val chatItems = mutableListOf<ChatItem>()
+    var previousDate: String? = null
+
+    for (message in this) {
+        val messageDate = message.time?.toDate()?.toDateString()
+
+        if (messageDate != previousDate) {
+            chatItems.add(ChatItem.DateSeparator(messageDate!!))
+            previousDate = messageDate
+        }
+        chatItems.add(ChatItem.Message(message))
+    }
+    return chatItems.reversed()
+}
+
+private fun Date.toDateString(): String {
+    val sdf = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
+    return sdf.format(this)
 }

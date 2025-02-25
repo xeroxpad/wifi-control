@@ -4,20 +4,15 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.wificontrol.components.CHAT_COLLECTIONS
-import com.example.wificontrol.components.SUPPORT_EMAIL
 import com.google.firebase.Firebase
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.auth
-import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -37,10 +32,9 @@ class ChatSupportViewModel : ViewModel() {
     val chatId: StateFlow<String> = _chatId
 
     private val _activeChatId = MutableStateFlow<String?>(null)
-    val activeChatId: StateFlow<String?> = _activeChatId
 
     private val _isChatScreenActive = MutableStateFlow(false)
-    val isChatScreenActive: StateFlow<Boolean> = _isChatScreenActive
+
 
     init {
         checkOrCreateChat()
@@ -122,7 +116,25 @@ class ChatSupportViewModel : ViewModel() {
                     .update("status", MessageStatus.DELIVERED.name)
             }
             .addOnFailureListener { e ->
-                Log.e("ChatSupport", "❌ Ошибка отправки сообщения", e)
+                Log.e("ChatSupport", "Ошибка отправки сообщения", e)
+            }
+    }
+
+    fun deleteMessage(msgId: String) {
+        if (_chatId.value.isEmpty()) {
+            Log.e("ChatSupport", "Chat ID пуст. Нельзя удалить сообщение.")
+            return
+        }
+
+        chatCollection.document(_chatId.value)
+            .collection("messages")
+            .document(msgId)
+            .delete()
+            .addOnSuccessListener {
+                Log.d("ChatSupport", "Сообщение удалено: $msgId")
+            }
+            .addOnFailureListener { e ->
+                Log.e("ChatSupport", "Ошибка удаления сообщения", e)
             }
     }
 
@@ -175,18 +187,19 @@ class ChatSupportViewModel : ViewModel() {
             }
     }
 
+
     private fun listenForMessages() {
         if (isListening) return
         isListening = true
         viewModelScope.launch {
             val chatIdValue = chatId.first { it.isNotEmpty() }
             messagesListener?.remove()
-            Log.d("ChatSupport", "📡 Начинаем слушать сообщения для чата: $chatIdValue")
+            Log.d("ChatSupport", "Начинаем слушать сообщения для чата: $chatIdValue")
             messagesListener = chatCollection.document(chatIdValue).collection("messages")
                 .orderBy("time", Query.Direction.ASCENDING)
                 .addSnapshotListener { snapshot, error ->
                     if (error != null) {
-                        Log.e("ChatSupport", "❌ Ошибка прослушивания сообщений", error)
+                        Log.e("ChatSupport", "Ошибка прослушивания сообщений", error)
                         return@addSnapshotListener
                     }
                     snapshot?.let {
@@ -194,7 +207,7 @@ class ChatSupportViewModel : ViewModel() {
                             doc.toObject(MessageData::class.java)
                         }
                         _messages.value = messagesList
-                        Log.d("ChatSupport", "✅ Messages updated: ${messagesList.map { it.content }}")
+                        Log.d("ChatSupport", "Messages updated: ${messagesList.map { it.content }}")
                         if (_isChatScreenActive.value) {
                             markMessagesAsRead()
                         }
