@@ -19,7 +19,6 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun StartScreen(
     navController: NavHostController,
-    authorizationViewModel: AuthorizationViewModel = koinViewModel()
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -44,7 +43,7 @@ fun StartScreen(
     }) { padding ->
         NavHostItem(
             navController = navController,
-            modifier = Modifier.padding(padding),
+            modifier = Modifier.padding(padding)
         )
     }
 }

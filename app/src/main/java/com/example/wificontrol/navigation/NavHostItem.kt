@@ -45,8 +45,9 @@ fun NavHostItem(
         composable(Graph.Auth.route) {
             AuthorizationScreen(onLoginVk = {}, navController = navController)
         }
-        composable(Graph.ChatSupport.route) {
-            ChatSupportScreen(navController = navController)
+        composable("${Graph.ChatSupport.route}/{chatId}") {backStackEntry ->
+            val chatId = backStackEntry.arguments?.getString("chatId") ?: ""
+            ChatSupportScreen(navController = navController, chatId = chatId)
         }
     }
 }

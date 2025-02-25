@@ -1,5 +1,6 @@
 package com.example.wificontrol.screens.profile
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -43,6 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.compose.primaryLight
@@ -50,6 +52,7 @@ import com.example.wificontrol.R
 import com.example.wificontrol.components.Switch
 import com.example.wificontrol.navigation.Graph
 import com.example.wificontrol.screens.authorization.signOut
+import com.example.wificontrol.screens.support.ChatSupportViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.launch
@@ -60,8 +63,10 @@ import org.koin.androidx.compose.koinViewModel
 fun ProfileScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
+    chatSupportViewModel: ChatSupportViewModel = koinViewModel(),
     viewModelProfile: ProfileScreenViewModel = koinViewModel(),
 ) {
+    val chatId by chatSupportViewModel.chatId.collectAsStateWithLifecycle()
     val profile by viewModelProfile.profile.observeAsState()
     val email = viewModelProfile.userEmail
     val tooltipState = rememberTooltipState()
@@ -185,7 +190,10 @@ fun ProfileScreen(
                 .fillMaxWidth()
                 .height(46.dp)
                 .clip(shape = RoundedCornerShape(14.dp))
-                .clickable { navController.navigate(Graph.ChatSupport.route) },
+                .clickable {
+                    navController.navigate("${Graph.ChatSupport.route}/$chatId")
+                    Log.d("ProfileScreen", "Текущий chatId: $chatId")
+                },
         ) {
             Row(
                 modifier = Modifier

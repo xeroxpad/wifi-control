@@ -151,7 +151,7 @@ fun TextFieldAuth(
             BasicTextField(
                 value = text,
                 onValueChange = { newText ->
-                    textChange(newText)
+                    textChange(newText.trimEnd())
                 },
                 modifier = Modifier
                     .weight(0.8f)
@@ -181,11 +181,6 @@ fun TextFieldAuth(
                 } else {
                     KeyboardOptions(capitalization = KeyboardCapitalization.None)
                 },
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        textChange(text.trim())
-                    }
-                ),
                 decorationBox = { innerTextField ->
                     when {
                         text.isEmpty() -> {

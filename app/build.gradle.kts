@@ -95,6 +95,7 @@ dependencies {
     implementation(libs.compose.shimmer)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.firebase.messaging.ktx)
+    implementation(libs.firebase.firestore)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

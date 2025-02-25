@@ -1,10 +1,22 @@
 package com.example.wificontrol.screens.profile
 
-import kotlinx.serialization.Serializable
+import com.example.wificontrol.screens.support.ChatUserData
 
 
-@Serializable
+//@Serializable
 data class AccountData(
-    val uid: String = "",
-    val email: String = "",
+    val userId: String = "",
+    val email: String? = "",
+    val username: String? = "",
+    val ppurl: String? = "",
+    val bio: String = "",
+)
+
+fun AccountData.toChatUserData() = ChatUserData(
+    userId = this.userId,
+    email = this.email?: "",
+    username = this.username,
+    ppurl = this.ppurl?: "",
+    bio = this.bio,
+    typing = false
 )
