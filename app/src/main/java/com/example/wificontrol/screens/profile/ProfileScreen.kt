@@ -167,12 +167,13 @@ fun ProfileScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(46.dp)
-                .clip(shape = RoundedCornerShape(14.dp)),
+                .clip(shape = RoundedCornerShape(10.dp))
+                .clickable {  },
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(3.dp),
+                    .padding(6.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
@@ -189,7 +190,7 @@ fun ProfileScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(46.dp)
-                .clip(shape = RoundedCornerShape(14.dp))
+                .clip(shape = RoundedCornerShape(10.dp))
                 .clickable {
                     navController.navigate("${Graph.ChatSupport.route}/$chatId")
                     Log.d("ProfileScreen", "Текущий chatId: $chatId")
@@ -198,7 +199,7 @@ fun ProfileScreen(
             Row(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(3.dp),
+                    .padding(horizontal = 6.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(

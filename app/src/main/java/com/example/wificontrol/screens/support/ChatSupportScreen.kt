@@ -1,5 +1,6 @@
 package com.example.wificontrol.screens.support
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LocalIndication
@@ -71,6 +72,8 @@ import com.example.compose.primaryLight
 import com.example.wificontrol.R
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.firestore
 import com.valentinilk.shimmer.ShimmerBounds
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
@@ -79,6 +82,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+@SuppressLint("RememberReturnType")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatSupportScreen(
@@ -92,8 +96,11 @@ fun ChatSupportScreen(
     val message by chatSupportViewModel.messages.collectAsState()
     val reversedMessages = remember(message) { message }
     val chatItems = remember(reversedMessages) { reversedMessages.toChatItems() }
-    var selectedMessage by remember { mutableStateOf<MessageData?>(null) }
+    var selectedMessage by remember { mutableStateOf(setOf<String>()) }
+    val isSelectionMode = selectedMessage.isNotEmpty()
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(true) }
+    var chat by remember { mutableStateOf<List<ChatItem>>(emptyList()) }
     LaunchedEffect(chatId) {
         Log.d("ChatSupport", "Полученный chatId в UI: '$chatId'")
         if (chatId.isNotEmpty()) {
@@ -130,7 +137,7 @@ fun ChatSupportScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start
             ) {
-                if (selectedMessage != null) {
+                if (selectedMessage.isNotEmpty()) {
                     Icon(
                         imageVector = Icons.Default.Close,
                         contentDescription = "Отмена",
@@ -138,7 +145,9 @@ fun ChatSupportScreen(
                             .size(32.dp)
                             .padding(vertical = 5.dp)
                             .clickable {
-                                selectedMessage = null
+                                Log.d("ChatSupport", "До сброса: $selectedMessage")
+                                selectedMessage = emptySet()
+                                Log.d("ChatSupport", "После сброса: $selectedMessage")
                             }
                     )
                     Spacer(modifier = Modifier.weight(1f))
@@ -178,14 +187,15 @@ fun ChatSupportScreen(
                     .fillMaxSize()
                     .consumeWindowInsets(padding)
             ) {
-                if (showDeleteDialog && selectedMessage != null) {
+                if (showDeleteDialog && selectedMessage.isNotEmpty()) {
                     AlertDialog(
                         onDismissRequest = { showDeleteDialog = false },
                         title = { Text("Удалить сообщение") },
                         text = { Text("Вы уверены, что хотите удалить это сообщение?") },
                         confirmButton = {
                             TextButton(onClick = {
-                                chatSupportViewModel.deleteMessage(selectedMessage!!.msgId)
+                                chatSupportViewModel.deleteMessages(selectedMessage.toList())
+                                selectedMessage != selectedMessage
                                 showDeleteDialog = false
                             }) {
                                 Text("Удалить")
@@ -194,7 +204,6 @@ fun ChatSupportScreen(
                         dismissButton = {
                             TextButton(onClick = {
                                 showDeleteDialog = false
-                                selectedMessage = null
                             }) {
                                 Text("Отмена")
                             }
@@ -209,18 +218,35 @@ fun ChatSupportScreen(
                     reverseLayout = true,
                     state = scrollState
                 ) {
-                    items(chatItems) { message ->
-                        when (message) {
-                            is ChatItem.Message -> MessageBubble(
-                                message.message,
-                                isOutgoing = message.message.senderId == Firebase.auth.currentUser?.uid,
-                                onLongPress = {
-                                    selectedMessage = message.message
-                                },
-                                onClick = {  }
-                            )
+                    if (chatItems.isEmpty()) {
+                        items(5) { index ->
+                            ShimmerLoadingPlaceholder(isOutgoing = index % 2 == 0)
+                        }
+                    } else {
+                        items(chatItems) { message ->
+                            when (message) {
+                                is ChatItem.Message -> MessageBubble(
+                                    message.message,
+                                    isOutgoing = message.message.senderId == Firebase.auth.currentUser?.uid,
+                                    selectedMessages = selectedMessage,
+                                    isSelectionMode = isSelectionMode,
+                                    onLongPress = {
+                                        selectedMessage = selectedMessage + message.message.msgId
+                                    },
+                                    onClick = {
+                                        if (isSelectionMode) {
+                                            selectedMessage =
+                                                if (selectedMessage.contains(message.message.msgId)) {
+                                                    selectedMessage - message.message.msgId
+                                                } else {
+                                                    selectedMessage + message.message.msgId
+                                                }
+                                        }
+                                    }
+                                )
 
-                            is ChatItem.DateSeparator -> DateSeparator(message.date)
+                                is ChatItem.DateSeparator -> DateSeparator(message.date)
+                            }
                         }
                     }
                 }
@@ -237,6 +263,7 @@ fun ChatSupportScreen(
                         placeholder = { Text("Введите сообщение...") },
                         keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
                         modifier = Modifier
+                            .padding(horizontal = 4.dp)
                             .weight(1f)
                             .background(Color.Transparent, RoundedCornerShape(20.dp)),
                         colors = TextFieldDefaults.textFieldColors(
@@ -244,7 +271,7 @@ fun ChatSupportScreen(
                             unfocusedIndicatorColor = Color.Transparent,
                             disabledIndicatorColor = Color.Transparent,
                         ),
-                        shape = RoundedCornerShape(20.dp)
+                        shape = RoundedCornerShape(16.dp)
                     )
                     IconButton(
                         onClick = {
@@ -269,7 +296,7 @@ fun ShimmerLoadingPlaceholder(isOutgoing: Boolean) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(bottom = 4.dp),
         contentAlignment = if (isOutgoing) Alignment.CenterEnd else Alignment.CenterStart
     ) {
         Box(
@@ -277,10 +304,10 @@ fun ShimmerLoadingPlaceholder(isOutgoing: Boolean) {
                 .shimmer(shimmerInstance)
                 .fillMaxWidth(0.6f)
                 .background(
-                    color = Color.LightGray,
-                    shape = RoundedCornerShape(16.dp)
+                    color = primaryLight,
+                    shape = RoundedCornerShape(12.dp)
                 )
-                .height(74.dp)
+                .height(64.dp)
         )
     }
 }
@@ -307,11 +334,13 @@ fun DateSeparator(date: String) {
 fun MessageBubble(
     message: MessageData,
     isOutgoing: Boolean,
+    selectedMessages: Set<String>,
+    isSelectionMode: Boolean,
     onLongPress: () -> Unit = {},
     onClick: () -> Unit = {}
 ) {
     val chatSupportViewModel: ChatSupportViewModel = koinViewModel()
-    var isSelected by remember { mutableStateOf(false) }
+    val isSelected = selectedMessages.contains(message.msgId)
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -319,10 +348,7 @@ fun MessageBubble(
             .combinedClickable(
                 enabled = isOutgoing,
                 onClick = { onClick() },
-                onLongClick = {
-                    isSelected = !isSelected
-                    onLongPress()
-                }
+                onLongClick = { onLongPress() }
             )
             .background(
                 color = if (isSelected) Color.Gray.copy(alpha = 0.2f)

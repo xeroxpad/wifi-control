@@ -120,21 +120,25 @@ class ChatSupportViewModel : ViewModel() {
             }
     }
 
-    fun deleteMessage(msgId: String) {
+    fun deleteMessages(messageIds: List<String>) {
         if (_chatId.value.isEmpty()) {
-            Log.e("ChatSupport", "Chat ID пуст. Нельзя удалить сообщение.")
+            Log.e("ChatSupport", "Chat ID пуст. Нельзя удалить сообщения.")
             return
         }
 
-        chatCollection.document(_chatId.value)
-            .collection("messages")
-            .document(msgId)
-            .delete()
+        val batch = firestore.batch()
+        messageIds.forEach { msgId ->
+            val messageRef = chatCollection.document(_chatId.value)
+                .collection("messages").document(msgId)
+            batch.delete(messageRef)
+        }
+
+        batch.commit()
             .addOnSuccessListener {
-                Log.d("ChatSupport", "Сообщение удалено: $msgId")
+                Log.d("ChatSupport", "Сообщения удалены: $messageIds")
             }
             .addOnFailureListener { e ->
-                Log.e("ChatSupport", "Ошибка удаления сообщения", e)
+                Log.e("ChatSupport", "Ошибка удаления сообщений", e)
             }
     }
 
@@ -188,7 +192,7 @@ class ChatSupportViewModel : ViewModel() {
     }
 
 
-    private fun listenForMessages() {
+    fun listenForMessages() {
         if (isListening) return
         isListening = true
         viewModelScope.launch {
