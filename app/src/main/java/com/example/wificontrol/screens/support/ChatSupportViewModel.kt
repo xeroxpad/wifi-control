@@ -7,6 +7,7 @@ import com.example.wificontrol.components.CHAT_COLLECTIONS
 import com.google.firebase.Firebase
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
@@ -30,6 +31,9 @@ class ChatSupportViewModel : ViewModel() {
 
     private val _chatId = MutableStateFlow("")
     val chatId: StateFlow<String> = _chatId
+
+    private val _chatTitle = MutableStateFlow("Чат с поддержкой")
+    val chatTitle: StateFlow<String> = _chatTitle
 
     private val _activeChatId = MutableStateFlow<String?>(null)
 
@@ -63,6 +67,7 @@ class ChatSupportViewModel : ViewModel() {
                 }
                 if (chat != null) {
                     _chatId.value = chat.id
+                    updateChatTitle(chat)
                     listenForMessages()
                 } else {
                     createChat(userEmail, hostEmail)
@@ -84,6 +89,7 @@ class ChatSupportViewModel : ViewModel() {
         chatCollection.document(chatId).set(newChat)
             .addOnSuccessListener {
                 _chatId.value = chatId
+                _chatTitle.value = hostEmail
                 listenForMessages()
             }
     }
@@ -161,7 +167,10 @@ class ChatSupportViewModel : ViewModel() {
     }
 
     fun markMessagesAsRead() {
-        Log.d("ChatSupport", "markMessagesAsRead вызван, isChatScreenActive: ${_isChatScreenActive.value}")
+        Log.d(
+            "ChatSupport",
+            "markMessagesAsRead вызван, isChatScreenActive: ${_isChatScreenActive.value}"
+        )
         if (!_isChatScreenActive.value) {
             Log.d("ChatSupport", "Экран не активен, пропускаем обновление")
             return
@@ -192,7 +201,7 @@ class ChatSupportViewModel : ViewModel() {
     }
 
 
-    fun listenForMessages() {
+    private fun listenForMessages() {
         if (isListening) return
         isListening = true
         viewModelScope.launch {
@@ -218,6 +227,13 @@ class ChatSupportViewModel : ViewModel() {
                     }
                 }
         }
+    }
+
+    private fun updateChatTitle(chatDocument: DocumentSnapshot) {
+        val participants = chatDocument.get("participants") as? List<String> ?: return
+        val userEmail = auth.currentUser?.email ?: return
+        val otherUserEmail = participants.firstOrNull { it != userEmail } ?: "Чат с поддержкой"
+        _chatTitle.value = otherUserEmail
     }
 
     fun formatTimestamp(timestamp: Timestamp): String {

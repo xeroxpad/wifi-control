@@ -88,6 +88,8 @@ dependencies {
     implementation (libs.play.services.auth)
     implementation(platform(libs.firebase.bom))
     implementation (libs.firebase.auth)
+    implementation ("com.google.firebase:firebase-messaging-ktx:24.1.0")
+    implementation ("com.google.firebase:firebase-messaging-directboot:24.1.0")
     implementation (libs.retrofit)
     implementation (libs.converter.gson)
     implementation (libs.kotlinx.coroutines.core)

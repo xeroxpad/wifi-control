@@ -18,34 +18,43 @@ import com.example.wificontrol.screens.support.ChatSupportScreen
 fun NavHostItem(
     modifier: Modifier = Modifier,
     navController: NavHostController,
+    onBottomVisibilityChange: (Boolean) -> Unit,
 ) {
     NavHost(
         navController = navController,
         startDestination = Graph.Home.route,
-        modifier = modifier
+        modifier = modifier,
     ) {
         composable(Graph.Home.route) {
+            onBottomVisibilityChange(true)
             HomeScreen(navController = navController)
         }
         composable(Graph.Search.route) {
+            onBottomVisibilityChange(true)
             SearchScreen(navController = navController)
         }
         composable(Graph.Statistics.route) {
+            onBottomVisibilityChange(true)
             StatisticsScreen()
         }
         composable(Graph.Profile.route) {
+            onBottomVisibilityChange(true)
             ProfileScreen(navController = navController)
         }
         composable(Graph.DeviceDetection.route) {
+            onBottomVisibilityChange(false)
             DeviceDetection(navController = navController)
         }
         composable(Graph.ScannerResult.route) {
+            onBottomVisibilityChange(false)
             ScannerResultScreen(navController = navController)
         }
         composable(Graph.Auth.route) {
+            onBottomVisibilityChange(false)
             AuthorizationScreen(onLoginVk = {}, navController = navController)
         }
         composable("${Graph.ChatSupport.route}/{chatId}") {backStackEntry ->
+            onBottomVisibilityChange(false)
             val chatId = backStackEntry.arguments?.getString("chatId") ?: ""
             ChatSupportScreen(navController = navController, chatId = chatId)
         }

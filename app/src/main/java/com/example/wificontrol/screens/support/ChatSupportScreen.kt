@@ -3,15 +3,10 @@ package com.example.wificontrol.screens.support
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,7 +19,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
@@ -59,7 +53,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -67,13 +60,12 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.compose.primaryLight
 import com.example.wificontrol.R
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
-import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.firestore
 import com.valentinilk.shimmer.ShimmerBounds
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
@@ -93,14 +85,13 @@ fun ChatSupportScreen(
     val chatSupportViewModel: ChatSupportViewModel = koinViewModel()
     val messageText = remember { mutableStateOf("") }
     val scrollState = rememberLazyListState()
-    val message by chatSupportViewModel.messages.collectAsState()
+    val message by chatSupportViewModel.messages.collectAsStateWithLifecycle()
     val reversedMessages = remember(message) { message }
     val chatItems = remember(reversedMessages) { reversedMessages.toChatItems() }
     var selectedMessage by remember { mutableStateOf(setOf<String>()) }
     val isSelectionMode = selectedMessage.isNotEmpty()
     var showDeleteDialog by remember { mutableStateOf(false) }
-    var isLoading by remember { mutableStateOf(true) }
-    var chat by remember { mutableStateOf<List<ChatItem>>(emptyList()) }
+    val chatTitle by chatSupportViewModel.chatTitle.collectAsStateWithLifecycle()
     LaunchedEffect(chatId) {
         Log.d("ChatSupport", "Полученный chatId в UI: '$chatId'")
         if (chatId.isNotEmpty()) {
@@ -115,7 +106,7 @@ fun ChatSupportScreen(
         }
     }
     LaunchedEffect(Unit) {
-        chatSupportViewModel.setChatScreenActive(true)
+        chatSupportViewModel.setChatScreenActive()
         chatSupportViewModel.markMessagesAsRead()
     }
     DisposableEffect(Unit) {
@@ -173,7 +164,7 @@ fun ChatSupportScreen(
                     )
                     Spacer(modifier = Modifier.width(20.dp))
                     Text(
-                        text = stringResource(id = R.string.chat_support),
+                        text = chatTitle,
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp,
                         modifier = Modifier.padding(vertical = 5.dp)
@@ -277,7 +268,8 @@ fun ChatSupportScreen(
                         onClick = {
                             chatSupportViewModel.sendMessage(messageText.value)
                             messageText.value = ""
-                        }
+                        },
+                        enabled = messageText.value.isNotBlank()
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.Send,
@@ -304,7 +296,7 @@ fun ShimmerLoadingPlaceholder(isOutgoing: Boolean) {
                 .shimmer(shimmerInstance)
                 .fillMaxWidth(0.6f)
                 .background(
-                    color = primaryLight,
+                    color = Color.LightGray,
                     shape = RoundedCornerShape(12.dp)
                 )
                 .height(64.dp)

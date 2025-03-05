@@ -18,6 +18,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 @Composable
 fun BottomNavigationBar(
     navController: NavController,
+    state: Boolean,
     modifier: Modifier = Modifier,
 ) {
     NavigationBar(modifier = modifier, containerColor = Color.Transparent) {

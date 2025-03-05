@@ -1,9 +1,11 @@
 package com.example.wificontrol.screens.statistics
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -54,26 +57,21 @@ fun StatisticsScreen(
         topBar = {
             Row(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.background),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = stringResource(id = R.string.wifi_statistics),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    modifier = Modifier.padding(vertical = 3.dp)
-                )
-            }
-        },
-        content = { padding ->
-            LazyColumn(
-                modifier =
-                Modifier
-                    .padding(padding),
-                verticalArrangement = Arrangement.Top
-            ) {
-                item {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.wifi_statistics),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp,
+                        modifier = Modifier.padding(vertical = 3.dp)
+                    )
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
@@ -99,7 +97,18 @@ fun StatisticsScreen(
                             tint = Color.Gray,
                         )
                     }
-                    Spacer(modifier = Modifier.height(20.dp))
+                }
+            }
+        },
+        content = { padding ->
+            LazyColumn(
+                modifier =
+                Modifier
+                    .consumeWindowInsets(padding),
+                verticalArrangement = Arrangement.Top
+            ) {
+                item {
+                    Spacer(modifier = Modifier.height(30.dp))
                     CustomSpeedometer()
                     Spacer(modifier = Modifier.height(30.dp))
                     Icon(
