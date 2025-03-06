@@ -66,6 +66,7 @@ fun ProfileScreen(
     viewModelProfile: ProfileScreenViewModel = koinViewModel(),
 ) {
     val chatId by chatSupportViewModel.chatId.collectAsStateWithLifecycle()
+    val currentUserEmail = Firebase.auth.currentUser?.email
     val profile by viewModelProfile.profile.observeAsState()
     val email = viewModelProfile.userEmail
     val tooltipState = rememberTooltipState()
@@ -191,8 +192,13 @@ fun ProfileScreen(
                 .height(46.dp)
                 .clip(shape = RoundedCornerShape(10.dp))
                 .clickable {
-                    navController.navigate("${Graph.ChatSupport.route}/$chatId")
-                    Log.d("ProfileScreen", "Текущий chatId: $chatId")
+//                    navController.navigate("${Graph.ChatSupport.route}/$chatId")
+//                    Log.d("ProfileScreen", "Текущий chatId: $chatId")
+                    if (currentUserEmail == "support@mail.ru") {
+                        navController.navigate(Graph.AllChatsScreen.route)
+                    } else {
+                        navController.navigate("${Graph.ChatSupport.route}/$chatId")
+                    }
                 },
         ) {
             Row(
@@ -216,3 +222,4 @@ fun ProfileScreen(
         }
     }
 }
+

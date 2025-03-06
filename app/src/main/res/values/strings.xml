@@ -21,6 +21,7 @@
     <string name="select_device">Выберите устройство</string>
     <string name="search_device">Поиск устройств...</string>
     <string name="wifi_statistics">WiFi статистика</string>
+    <string name="chats">Чаты</string>
     <string name="chat_support">Чат с поддержкой</string>
     <string name="usage_statistics">Статистика</string>
     <string name="found_devices">Найденные устройства</string>

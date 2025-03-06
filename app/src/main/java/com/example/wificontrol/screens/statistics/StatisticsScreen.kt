@@ -48,7 +48,6 @@ fun StatisticsScreen(
     modifier: Modifier = Modifier,
     viewModelStatisticsScreenViewModel: StatisticsScreenViewModel = koinViewModel()
 ) {
-    val speedTestResult by viewModelStatisticsScreenViewModel.speedTestResult.collectAsStateWithLifecycle()
     Scaffold(
         modifier =
         modifier
@@ -109,14 +108,6 @@ fun StatisticsScreen(
             ) {
                 item {
                     Spacer(modifier = Modifier.height(30.dp))
-                    CustomSpeedometer()
-                    Spacer(modifier = Modifier.height(30.dp))
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_line),
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Spacer(modifier = Modifier.height(30.dp))
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
@@ -154,6 +145,14 @@ fun StatisticsScreen(
                             )
                         }
                     }
+                    Spacer(modifier = Modifier.height(30.dp))
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_line),
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(30.dp))
+                    CustomSpeedometer()
                 }
             }
         }

@@ -10,4 +10,5 @@ sealed class Graph(val route: String) {
     data object ScannerResult : Graph("scanner_result")
     data object Auth : Graph("authorization")
     data object ChatSupport : Graph("chat_support")
+    data object AllChatsScreen : Graph("all_chats_screen")
 }

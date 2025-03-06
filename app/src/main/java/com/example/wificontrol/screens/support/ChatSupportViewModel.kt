@@ -39,9 +39,12 @@ class ChatSupportViewModel : ViewModel() {
 
     private val _isChatScreenActive = MutableStateFlow(false)
 
+    private val _chats = MutableStateFlow<List<ChatData>>(emptyList())
+    val chats: StateFlow<List<ChatData>> = _chats
 
     init {
         checkOrCreateChat()
+//        loadUserChats()
         viewModelScope.launch {
             chatId.collect { id ->
                 if (id.isNotEmpty()) {
@@ -227,6 +230,26 @@ class ChatSupportViewModel : ViewModel() {
                     }
                 }
         }
+    }
+
+    fun loadUserChats() {
+        val userEmail = auth.currentUser?.email ?: return
+
+        chatCollection
+            .whereArrayContains("participants", userEmail)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    Log.e("ChatSupport", "Ошибка загрузки чатов", error)
+                    return@addSnapshotListener
+                }
+
+                snapshot?.let {
+                    val chatList = it.documents.mapNotNull { doc ->
+                        doc.toObject(ChatData::class.java)
+                    }
+                    _chats.value = chatList
+                }
+            }
     }
 
     private fun updateChatTitle(chatDocument: DocumentSnapshot) {

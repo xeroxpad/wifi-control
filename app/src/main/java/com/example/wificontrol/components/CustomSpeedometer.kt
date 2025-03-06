@@ -1,45 +1,60 @@
 package com.example.wificontrol.components
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import android.annotation.SuppressLint
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.compose.primaryLight
-import com.farimarwat.speedmeter.SpeedMeter
-import kotlin.random.Random
+import androidx.compose.ui.viewinterop.AndroidView
 
 @Composable
-fun CustomSpeedometer(modifier: Modifier = Modifier,) {
-    var progress by remember {
-        mutableFloatStateOf(0f)
+fun CustomSpeedometer(modifier: Modifier = Modifier) {
+    var showWebView by remember { mutableStateOf(false) }
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        if (showWebView) {
+            SpeedTestWebView(onClose = { showWebView = false })
+        } else {
+            Button(onClick = { showWebView = true }) {
+                Text("Запустить тест скорости в браузере")
+            }
+        }
     }
-    SpeedMeter(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(370.dp)
-            .clickable(onClick = {
-                progress = Random
-                    .nextInt(80, 100)
-                    .toFloat()
-            },
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }),
-        backgroundColor = Color.Unspecified,
-        progressWidth = 50f,
-        progress = progress,
-        needleColors = listOf(Color.Black, Color.White),
-        needleKnobColors = listOf(Color.Black, Color.Gray),
-        needleKnobSize = 20f,
-        progressColors = listOf(Color.Red, Color.Yellow),
-        labelColor = primaryLight,
-        unitText = "MB",
+}
+
+@SuppressLint("SetJavaScriptEnabled")
+@Composable
+fun SpeedTestWebView(onClose: () -> Unit) {
+    TextButton(onClick = onClose) {
+        Text("Закрыть")
+    }
+    Spacer(modifier = Modifier.height(10.dp))
+    AndroidView(
+        factory = { context ->
+            WebView(context).apply {
+                settings.javaScriptEnabled = true
+                webViewClient = WebViewClient()
+                loadUrl("https://www.speedtest.net")
+            }
+        },
+        modifier = Modifier.fillMaxSize()
     )
 }
