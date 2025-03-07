@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -35,10 +37,12 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.example.compose.primaryLight
 import com.example.compose.secondaryLight
 import com.example.wificontrol.R
 import com.example.wificontrol.navigation.Graph
@@ -100,7 +104,8 @@ fun AllChatScreen(
                     items(chats) { chat ->
                         ChatItem(
                             chat,
-                            onClick = { navController.navigate("${Graph.ChatSupport.route}/$chatId") })
+                            onClick = { navController.navigate("${Graph.ChatSupport.route}/${chat.chatId}") }
+                        )
                     }
                 }
             } else {
@@ -123,8 +128,35 @@ fun ChatItem(chat: ChatData, onClick: () -> Unit) {
                 onClick()
             }
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = "Участники: ${chat.participants.joinToString()}")
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "Участники:\n${chat.participants.joinToString()}",
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1
+                )
+            }
+            if (chat.unreadCount > 0) {
+                Box(
+                    modifier = Modifier
+                        .size(22.dp)
+                        .clip(CircleShape)
+                        .background(primaryLight),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = chat.unreadCount.toString(),
+                        color = Color.White,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
         }
     }
 }

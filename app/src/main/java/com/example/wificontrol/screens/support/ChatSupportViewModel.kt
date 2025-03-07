@@ -243,11 +243,33 @@ class ChatSupportViewModel : ViewModel() {
                     return@addSnapshotListener
                 }
 
-                snapshot?.let {
-                    val chatList = it.documents.mapNotNull { doc ->
-                        doc.toObject(ChatData::class.java)
+                snapshot?.let { chatSnapshot ->
+                    val chatList = mutableListOf<ChatData>()
+
+                    chatSnapshot.documents.forEach { chatDoc ->
+                        val chatId = chatDoc.id
+                        val participants =
+                            chatDoc.get("participants") as? List<String> ?: emptyList()
+                        chatCollection.document(chatId).collection("messages")
+                            .whereEqualTo("status", MessageStatus.DELIVERED.name)
+                            .addSnapshotListener { messagesSnapshot, messagesError ->
+                                if (messagesError != null) {
+                                    Log.e("ChatSupport", "Ошибка загрузки сообщений", messagesError)
+                                    return@addSnapshotListener
+                                }
+                                val unreadCount = messagesSnapshot?.size() ?: 0
+
+                                val existingChat = chatList.find { it.chatId == chatId }
+
+                                if (existingChat != null) {
+                                    chatList[chatList.indexOf(existingChat)] =
+                                        existingChat.copy(unreadCount = unreadCount)
+                                } else {
+                                    chatList.add(ChatData(chatId, participants, unreadCount))
+                                }
+                                _chats.value = chatList.toList()
+                            }
                     }
-                    _chats.value = chatList
                 }
             }
     }

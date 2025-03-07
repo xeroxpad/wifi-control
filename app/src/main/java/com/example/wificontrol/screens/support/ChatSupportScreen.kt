@@ -106,7 +106,7 @@ fun ChatSupportScreen(
         }
     }
     LaunchedEffect(Unit) {
-        chatSupportViewModel.setChatScreenActive()
+        chatSupportViewModel.setChatScreenActive(true)
         chatSupportViewModel.markMessagesAsRead()
     }
     DisposableEffect(Unit) {
