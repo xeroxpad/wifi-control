@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -38,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -167,6 +169,7 @@ fun AuthorizationScreen(
                             password = password,
                             onSignInSuccess = { navController.navigate(Graph.Home.route) },
                             onLoginVk = onLoginVk,
+
                             onSwitchToSignIn = {
                                 screenState = true
                                 authorizationViewModel.resetFields()
@@ -193,6 +196,8 @@ fun SignInStateScreen(
     onSwitchToSignIn: () -> Unit,
     onSignInFailure: (String) -> Unit,
 ) {
+    val context = LocalContext.current
+    val authTokenStorage = remember { AuthTokenStorage(context) }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -203,14 +208,15 @@ fun SignInStateScreen(
             .clickable {
                 signInAccountFirebase(
                     firebaseAuth,
-                    email = mail,
-                    password = password,
+                    mail,
+                    password,
+                    authTokenStorage,
                     onSignInFailure = { error ->
                         onSignInFailure(error)
                     },
                     onSignInSuccess = {
                         onSignInSuccess()
-                    }
+                    },
                 )
             }
             .padding(all = 10.dp)) {
@@ -294,6 +300,8 @@ fun SignUpStateScreen(
     onSignUpFailure: (String) -> Unit,
     onSwitchToSignUp: () -> Unit,
 ) {
+    val context = LocalContext.current
+    val authTokenStorage = remember { AuthTokenStorage(context) }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxHeight()
@@ -306,12 +314,13 @@ fun SignUpStateScreen(
                     firebaseAuth,
                     mail,
                     password,
+                    authTokenStorage,
                     onSignUpFailure = { error ->
                         onSignUpFailure(error)
                     },
                     onSignUpSuccess = {
                         onSignUpSuccess()
-                    }
+                    },
                 )
             }
             .padding(all = 10.dp)) {

@@ -151,7 +151,7 @@ fun TextFieldAuth(
             BasicTextField(
                 value = text,
                 onValueChange = { newText ->
-                    textChange(newText.trimEnd())
+                    textChange(newText.trim())
                 },
                 modifier = Modifier
                     .weight(0.8f)

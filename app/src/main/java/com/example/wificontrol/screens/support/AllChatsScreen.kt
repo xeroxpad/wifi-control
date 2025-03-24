@@ -58,7 +58,6 @@ fun AllChatScreen(
     chatSupportViewModel: ChatSupportViewModel = koinViewModel(),
 ) {
     val chats by chatSupportViewModel.chats.collectAsStateWithLifecycle()
-    val chatId by chatSupportViewModel.chatId.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) {
         chatSupportViewModel.loadUserChats()
     }
@@ -138,7 +137,7 @@ fun ChatItem(chat: ChatData, onClick: () -> Unit) {
                 Text(
                     text = "Участники:\n${chat.participants.joinToString()}",
                     overflow = TextOverflow.Ellipsis,
-                    maxLines = 1
+                    maxLines = 2
                 )
             }
             if (chat.unreadCount > 0) {

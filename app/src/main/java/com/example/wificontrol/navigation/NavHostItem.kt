@@ -15,6 +15,7 @@ import com.example.wificontrol.screens.scannerresult.ScannerResultScreen
 import com.example.wificontrol.screens.search.SearchScreen
 import com.example.wificontrol.screens.statistics.StatisticsScreen
 import com.example.wificontrol.screens.support.AllChatScreen
+import com.example.wificontrol.screens.support.ChatData
 import com.example.wificontrol.screens.support.ChatSupportScreen
 
 @Composable
@@ -22,10 +23,11 @@ fun NavHostItem(
     modifier: Modifier = Modifier,
     navController: NavHostController,
     bottomVisible: MutableState<Boolean>,
+    startDestination: String,
 ) {
     NavHost(
         navController = navController,
-        startDestination = Graph.Home.route,
+        startDestination = startDestination,
         modifier = modifier,
     ) {
         composable(Graph.Home.route) {
@@ -75,7 +77,7 @@ fun NavHostItem(
                 bottomVisible.value = false
             }
             val chatId = backStackEntry.arguments?.getString("chatId") ?: ""
-            ChatSupportScreen(navController = navController, chatId = chatId)
+            ChatSupportScreen(navController = navController, chatId = chatId,)
         }
         composable(Graph.AllChatsScreen.route) {
             LaunchedEffect(Unit) {

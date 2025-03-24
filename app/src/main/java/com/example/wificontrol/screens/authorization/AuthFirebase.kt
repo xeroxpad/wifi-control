@@ -14,6 +14,7 @@ fun signUpAccountFirebase(
     authFirebase: FirebaseAuth,
     email: String,
     password: String,
+    storage: AuthTokenStorage,
     onSignUpSuccess: (AccountData) -> Unit,
     onSignUpFailure: (String) -> Unit
 ) {
@@ -24,12 +25,17 @@ fun signUpAccountFirebase(
     authFirebase.createUserWithEmailAndPassword(email, password)
         .addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                onSignUpSuccess(
-                    AccountData(
-                        task.result.user?.uid!!,
-                        task.result.user?.email!!
-                    )
-                )
+                task.result.user?.getIdToken(false)?.addOnSuccessListener { tokenResult ->
+                    tokenResult.token?.let { token ->
+                        storage.saveToken(token)
+                        onSignUpSuccess(
+                            AccountData(
+                                task.result.user?.uid!!,
+                                task.result.user?.email!!
+                            )
+                        )
+                    }
+                }
             }
         }
         .addOnFailureListener {
@@ -42,6 +48,7 @@ fun signInAccountFirebase(
     authFirebase: FirebaseAuth,
     email: String,
     password: String,
+    storage: AuthTokenStorage,
     onSignInSuccess: (AccountData) -> Unit,
     onSignInFailure: (String) -> Unit,
 ) {
@@ -52,12 +59,17 @@ fun signInAccountFirebase(
     authFirebase.signInWithEmailAndPassword(email, password)
         .addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                onSignInSuccess(
-                    AccountData(
-                        task.result.user?.uid!!,
-                        task.result.user?.email!!
-                    )
-                )
+                task.result.user?.getIdToken(false)?.addOnSuccessListener { tokenResult ->
+                    tokenResult.token?.let { token ->
+                        storage.saveToken(token)
+                        onSignInSuccess(
+                            AccountData(
+                                task.result.user?.uid!!,
+                                task.result.user?.email!!
+                            )
+                        )
+                    }
+                }
             }
         }
         .addOnFailureListener {
@@ -117,14 +129,41 @@ private fun translateFirebaseSignUpError(error: Exception?): String {
                 else -> "ошибка регистрации, проверьте введенные данные"
             }
         }
+
         is FirebaseAuthUserCollisionException -> {
             when (error.errorCode) {
                 "ERROR_EMAIL_ALREADY_IN_USE" -> "этот email уже используется"
                 else -> "ошибка регистрации, пользователь уже существует"
             }
         }
+
         is FirebaseAuthWeakPasswordException -> "пароль слишком слабый, используйте более сложный пароль"
         is FirebaseNetworkException -> "ошибка сети, проверьте подключение к интернету"
         else -> error?.message ?: "произошла неизвестная ошибка"
+    }
+}
+
+fun checkCachedAuth(
+    authFirebase: FirebaseAuth,
+    storage: AuthTokenStorage,
+    onSuccess: (AccountData) -> Unit,
+    onFailure: () -> Unit
+) {
+    val token = storage.getToken()
+    if (token != null && authFirebase.currentUser != null) {
+        authFirebase.currentUser?.getIdToken(true)?.addOnSuccessListener { tokenResult ->
+            storage.saveToken(tokenResult.token ?: return@addOnSuccessListener)
+            onSuccess(
+                AccountData(
+                    authFirebase.currentUser?.uid!!,
+                    authFirebase.currentUser?.email!!
+                )
+            )
+        }?.addOnFailureListener {
+            storage.clearTokens()
+            onFailure()
+        }
+    } else {
+        onFailure()
     }
 }

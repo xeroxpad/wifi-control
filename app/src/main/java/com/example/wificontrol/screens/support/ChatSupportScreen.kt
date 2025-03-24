@@ -49,6 +49,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -93,11 +94,10 @@ fun ChatSupportScreen(
     var showDeleteDialog by remember { mutableStateOf(false) }
     val chatTitle by chatSupportViewModel.chatTitle.collectAsStateWithLifecycle()
     LaunchedEffect(chatId) {
-        Log.d("ChatSupport", "Полученный chatId в UI: '$chatId'")
-        if (chatId.isNotEmpty()) {
-            chatSupportViewModel.setChatId(chatId)
-        } else {
-            Log.e("ChatSupport", "Пустой chatId не устанавливаем")
+        chatSupportViewModel.chats.collect { chats ->
+            if (chats.isNotEmpty()) {
+                chatSupportViewModel.setChatId(chatId)
+            }
         }
     }
     LaunchedEffect(message.size) {
@@ -105,9 +105,39 @@ fun ChatSupportScreen(
             scrollState.scrollToItem(0)
         }
     }
+//    LaunchedEffect(Unit) {
+//        chatSupportViewModel.setChatScreenActive(true)
+//        chatSupportViewModel.markMessagesAsRead()
+//    }
+//    DisposableEffect(Unit) {
+//        onDispose {
+//            chatSupportViewModel.setChatScreenActive(false)
+//        }
+//    }
+
+    LaunchedEffect(scrollState) {
+//        val unreadVisibleMessages = scrollState.mapNotNull { index ->
+//            val messages = message.getOrNull(index)
+//            if (messages?.status?.name == "DELIVERED") messages.msgId else null
+//        }
+//        if (unreadVisibleMessages.isNotEmpty()) {
+//            chatSupportViewModel.markSpecificMessagesAsRead(unreadVisibleMessages)
+//        }
+        snapshotFlow { scrollState.layoutInfo.visibleItemsInfo }
+            .collect { visibleItems ->
+                val visibleMessageIds = visibleItems.mapNotNull { item ->
+                    val messages = message.getOrNull(item.index)
+                    if (messages?.status?.name == MessageStatus.DELIVERED.name) messages.msgId else null
+                }
+                if (visibleMessageIds.isNotEmpty()) {
+                    chatSupportViewModel.markSpecificMessagesAsRead(visibleMessageIds)
+                }
+            }
+    }
+
     LaunchedEffect(Unit) {
         chatSupportViewModel.setChatScreenActive(true)
-        chatSupportViewModel.markMessagesAsRead()
+//        chatSupportViewModel.markMessagesAsRead()
     }
     DisposableEffect(Unit) {
         onDispose {
@@ -351,10 +381,12 @@ fun MessageBubble(
         Box(
             modifier = Modifier
                 .clip(shape = RoundedCornerShape(12.dp))
-                .background(if (isOutgoing) Color.LightGray else primaryLight)
+                .background(if (isOutgoing) Color.Green else primaryLight)
         ) {
             Card(
-                modifier = Modifier.widthIn(max = 250.dp),
+                modifier = Modifier
+                    .widthIn(max = 250.dp)
+                    .background(Color.Transparent),
             ) {
                 Column(
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 5.dp)

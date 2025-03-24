@@ -90,6 +90,8 @@ dependencies {
     implementation (libs.firebase.auth)
     implementation ("com.google.firebase:firebase-messaging-ktx:24.1.0")
     implementation ("com.google.firebase:firebase-messaging-directboot:24.1.0")
+//    implementation ("androidx.security:security-state:1.0.0-beta01")
+    implementation ("androidx.security:security-crypto:1.1.0-alpha06")
     implementation (libs.retrofit)
     implementation (libs.converter.gson)
     implementation (libs.kotlinx.coroutines.core)

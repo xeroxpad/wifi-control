@@ -15,9 +15,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.compose.AppTheme
 import com.example.wificontrol.screens.authorization.AuthState
+import com.example.wificontrol.screens.authorization.AuthTokenStorage
 import com.example.wificontrol.screens.authorization.AuthorizationScreen
 import com.example.wificontrol.screens.authorization.AuthorizationViewModel
 import com.example.wificontrol.screens.start.StartScreen
+import com.google.firebase.auth.FirebaseAuth
 import com.vk.api.sdk.VK
 import com.vk.api.sdk.auth.VKScope
 
@@ -36,6 +38,8 @@ class MainActivity : ComponentActivity() {
                 ) {
                     viewModel.performAuthResult(it)
                 }
+                val firebaseAuth = FirebaseAuth.getInstance()
+                val authTokenStorage = AuthTokenStorage(this)
 
 //                when (authStateVk) {
 //                    is AuthState.Authorized -> {
@@ -51,7 +55,11 @@ class MainActivity : ComponentActivity() {
 //
 //                    else -> {}
 //                }
-                StartScreen(navController = navController)
+                StartScreen(
+                    navController = navController,
+                    firebaseAuth = firebaseAuth,
+                    authTokenStorage = authTokenStorage
+                )
             }
         }
     }

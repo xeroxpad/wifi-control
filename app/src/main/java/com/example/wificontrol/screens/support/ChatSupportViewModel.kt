@@ -7,7 +7,6 @@ import com.example.wificontrol.components.CHAT_COLLECTIONS
 import com.google.firebase.Firebase
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.auth
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
@@ -44,7 +43,7 @@ class ChatSupportViewModel : ViewModel() {
 
     init {
         checkOrCreateChat()
-//        loadUserChats()
+        loadUserChats()
         viewModelScope.launch {
             chatId.collect { id ->
                 if (id.isNotEmpty()) {
@@ -70,7 +69,9 @@ class ChatSupportViewModel : ViewModel() {
                 }
                 if (chat != null) {
                     _chatId.value = chat.id
-                    updateChatTitle(chat)
+                    val participants = chat.get("participants") as? List<String>
+                    val chatEmail = participants?.getOrNull(0) ?: "Тех. поддержка"
+                    _chatTitle.value = chatEmail
                     listenForMessages()
                 } else {
                     createChat(userEmail, hostEmail)
@@ -98,6 +99,7 @@ class ChatSupportViewModel : ViewModel() {
     }
 
     fun sendMessage(content: String) {
+        val chatIdToSend = _activeChatId.value ?: _chatId.value
         if (_chatId.value.isEmpty()) {
             Log.e("ChatSupport", "Chat ID пуст. Нельзя отправить сообщение.")
             return
@@ -114,11 +116,11 @@ class ChatSupportViewModel : ViewModel() {
 
         Log.d("ChatSupport", "Отправка сообщения: $content в чат ${_chatId.value}")
 
-        chatCollection.document(_chatId.value)
+        chatCollection.document(chatIdToSend)
             .collection("messages")
             .document(message.msgId)
             .set(message)
-            .addOnSuccessListener { documentRef ->
+            .addOnSuccessListener {
                 chatCollection.document(_chatId.value)
                     .collection("messages")
                     .document(message.msgId)
@@ -163,10 +165,23 @@ class ChatSupportViewModel : ViewModel() {
         Log.d("ChatSupport", "Chat ID установлен: $id")
         isListening = false
         listenForMessages()
+
+        val chat = _chats.value.find { it.chatId == id }
+        if (chat != null) {
+            updateChatTitle(chat)
+        } else {
+            _chatTitle.value = "Загрузка..."
+        }
     }
 
     fun setChatScreenActive(isActive: Boolean = false) {
         _isChatScreenActive.value = isActive
+    }
+
+    private fun updateChatTitle(chat: ChatData) {
+        val userEmail = auth.currentUser?.email
+        val interlocutor = chat.participants.find { it != userEmail }
+        _chatTitle.value = interlocutor ?: "Чат"
     }
 
     fun markMessagesAsRead() {
@@ -224,9 +239,6 @@ class ChatSupportViewModel : ViewModel() {
                         }
                         _messages.value = messagesList
                         Log.d("ChatSupport", "Messages updated: ${messagesList.map { it.content }}")
-                        if (_isChatScreenActive.value) {
-                            markMessagesAsRead()
-                        }
                     }
                 }
         }
@@ -234,7 +246,7 @@ class ChatSupportViewModel : ViewModel() {
 
     fun loadUserChats() {
         val userEmail = auth.currentUser?.email ?: return
-
+        val currentUserId = auth.currentUser?.uid ?: return
         chatCollection
             .whereArrayContains("participants", userEmail)
             .addSnapshotListener { snapshot, error ->
@@ -257,7 +269,11 @@ class ChatSupportViewModel : ViewModel() {
                                     Log.e("ChatSupport", "Ошибка загрузки сообщений", messagesError)
                                     return@addSnapshotListener
                                 }
-                                val unreadCount = messagesSnapshot?.size() ?: 0
+                                val unreadMessages = messagesSnapshot?.documents?.filter { doc ->
+                                    val message = doc.toObject(MessageData::class.java)
+                                    message?.senderId != currentUserId
+                                }
+                                val unreadCount = unreadMessages?.size ?: 0
 
                                 val existingChat = chatList.find { it.chatId == chatId }
 
@@ -274,11 +290,19 @@ class ChatSupportViewModel : ViewModel() {
             }
     }
 
-    private fun updateChatTitle(chatDocument: DocumentSnapshot) {
-        val participants = chatDocument.get("participants") as? List<String> ?: return
-        val userEmail = auth.currentUser?.email ?: return
-        val otherUserEmail = participants.firstOrNull { it != userEmail } ?: "Чат с поддержкой"
-        _chatTitle.value = otherUserEmail
+    fun markSpecificMessagesAsRead(messageIds: List<String>) {
+        messageIds.forEach { msgId ->
+            chatCollection.document(_chatId.value)
+                .collection("messages")
+                .document(msgId)
+                .update("status", "READ")
+                .addOnSuccessListener {
+                    Log.d("ChatSupport", "Сообщение $msgId отмечено как прочитанное")
+                }
+                .addOnFailureListener { e ->
+                    Log.e("ChatSupport", "Ошибка: $e")
+                }
+        }
     }
 
     fun formatTimestamp(timestamp: Timestamp): String {

@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 class AuthorizationViewModel(application: Application) : AndroidViewModel(application) {
@@ -32,12 +33,37 @@ class AuthorizationViewModel(application: Application) : AndroidViewModel(applic
     private val _errorStateAuthorization = MutableStateFlow("")
     val errorStateAuthorization: StateFlow<String> = _errorStateAuthorization
 
+    private val authStorage = AuthTokenStorage(application)
+    private val firebaseAuth = FirebaseAuth.getInstance()
+    private val _firebaseAuthState = MutableStateFlow<FirebaseAuthState>(FirebaseAuthState.Initial)
+    val firebaseAuthState: StateFlow<FirebaseAuthState> = _firebaseAuthState
+
     init {
         val storage = VKPreferencesKeyValueStorage(application)
         val token = VKAccessToken.restore(storage)
         val isLoggedIn = token != null && token.isValid
         _authVkState.value = if (isLoggedIn) AuthState.Authorized else AuthState.NotAuthorized
+
+        checkFirebaseAuthState()
     }
+
+    private fun checkFirebaseAuthState() {
+        viewModelScope.launch {
+            _firebaseAuthState.value = try {
+                val token = authStorage.getToken()
+                if (token != null && firebaseAuth.currentUser != null) {
+                    firebaseAuth.currentUser?.getIdToken(true)?.await()
+                    FirebaseAuthState.Authorized
+                } else {
+                    FirebaseAuthState.Initial
+                }
+            } catch (e: Exception) {
+                FirebaseAuthState.Error("Ошибка проверки авторизации")
+            }
+        }
+    }
+    
+
 
     fun mailChange(newMail: String) {
         viewModelScope.launch {
